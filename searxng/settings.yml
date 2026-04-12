@@ -1,0 +1,8 @@
+use_default_settings: true
+server:
+  secret_key: "digi-hokuryu-searxng"
+  base_url: false
+search:
+  formats:
+    - html
+    - json

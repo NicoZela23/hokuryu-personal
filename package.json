@@ -1,0 +1,51 @@
+{
+  "name": "digi-hokuryu",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:migrate": "tsx lib/db/migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.x",
+    "react": "18.x",
+    "react-dom": "18.x",
+    "typescript": "5.x",
+    "tailwindcss": "3.x",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "framer-motion": "latest",
+    "@tanstack/react-query": "5.x",
+    "drizzle-orm": "latest",
+    "better-sqlite3": "latest",
+    "next-auth": "5.0.0-beta.30",
+    "bcryptjs": "latest",
+    "@anthropic-ai/sdk": "latest",
+    "openai": "latest",
+    "got": "14.x",
+    "cheerio": "latest",
+    "oembed-parser": "latest",
+    "csv-parse": "latest",
+    "xlsx": "latest",
+    "pdf-parse": "latest",
+    "marked": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/bcryptjs": "latest",
+    "@types/better-sqlite3": "latest",
+    "@types/pdf-parse": "latest",
+    "drizzle-kit": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "tsx": "latest"
+  }
+}

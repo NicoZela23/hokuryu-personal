@@ -1,0 +1,41 @@
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sql } from 'drizzle-orm'
+
+export const users = sqliteTable('users', {
+  id:           integer('id').primaryKey({ autoIncrement: true }),
+  username:     text('username').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  createdAt:    text('created_at').default(sql`CURRENT_TIMESTAMP`),
+})
+
+export const items = sqliteTable('items', {
+  id:          integer('id').primaryKey({ autoIncrement: true }),
+  url:         text('url').unique(),
+  title:       text('title').notNull(),
+  author:      text('author'),
+  sourceType:  text('source_type').notNull(),
+  genre:       text('genre'),
+  mood:        text('mood'),
+  synopsis:    text('synopsis'),
+  thumbnail:   text('thumbnail'),
+  duration:    text('duration'),
+  recommender: text('recommender'),
+  status:      text('status').default('pending'),
+  notes:       text('notes'),
+  rating:      integer('rating'),
+  aiTags:      text('ai_tags'),
+  enriched:    integer('enriched', { mode: 'boolean' }).default(false),
+  llmProvider: text('llm_provider'),
+  createdAt:   text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  consumedAt:  text('consumed_at'),
+})
+
+export const tags = sqliteTable('tags', {
+  id:    integer('id').primaryKey({ autoIncrement: true }),
+  label: text('label').notNull().unique(),
+})
+
+export const itemTags = sqliteTable('item_tags', {
+  itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
+  tagId:  integer('tag_id').notNull().references(() => tags.id, { onDelete: 'cascade' }),
+})

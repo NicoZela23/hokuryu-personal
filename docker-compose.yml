@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  garden:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env.local
+    environment:
+      - SEARXNG_URL=http://searxng:8080
+    depends_on:
+      - searxng
+    restart: unless-stopped
+
+  searxng:
+    image: searxng/searxng:latest
+    volumes:
+      - ./searxng:/etc/searxng
+    restart: unless-stopped
