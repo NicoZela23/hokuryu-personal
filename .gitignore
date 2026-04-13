@@ -8,10 +8,16 @@ out/
 # env
 .env.local
 .env.*.local
+.env
 
 # database
 data/*.db
+data/*.db-shm
+data/*.db-wal
 data/uploads/
+
+# leftover from removed SearXNG integration
+searxng/
 
 # misc
 .DS_Store

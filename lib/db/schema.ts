@@ -1,13 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
 import { sql } from 'drizzle-orm'
 
-export const users = sqliteTable('users', {
-  id:           integer('id').primaryKey({ autoIncrement: true }),
-  username:     text('username').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
-  createdAt:    text('created_at').default(sql`CURRENT_TIMESTAMP`),
-})
-
 export const items = sqliteTable('items', {
   id:          integer('id').primaryKey({ autoIncrement: true }),
   url:         text('url').unique(),
@@ -17,6 +10,9 @@ export const items = sqliteTable('items', {
   genre:       text('genre'),
   mood:        text('mood'),
   synopsis:    text('synopsis'),
+  facts:       text('facts'),        // kept for existing data, no longer populated
+  opinions:    text('opinions'),     // kept for existing data, no longer populated
+  keywords:    text('keywords'),     // JSON array of searchable proper nouns
   thumbnail:   text('thumbnail'),
   duration:    text('duration'),
   recommender: text('recommender'),

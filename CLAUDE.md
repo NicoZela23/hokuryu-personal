@@ -6,9 +6,11 @@ This file governs how you operate within this codebase. Read it completely at th
 
 ## What this project is
 
-Digi Hokuryu is a personal digital garden — a self-hosted content recommendation tracker. Users drop links or enter content manually, the app scrapes metadata, and optionally enriches it via an LLM. Items live on a growing timeline, organized by month and season. The aesthetic is organic: moss, paper, ink.
+Digi Hokuryu is a personal digital garden — a self-hosted content recommendation tracker. Users drop links or enter content manually. The app performs basic OG scraping for title/author/thumbnail, then enriches via LLM (OpenRouter by default, using a model with live web search) to produce a rich content profile: synopsis, facts, opinions/reception, genre, mood, and AI tags. Items live on a growing timeline organized by month and season. The aesthetic is organic: moss, paper, ink.
 
-Full specification is in `SPEC.md`. Read that file for all design decisions, schema, API shapes, and component inventory. Do not make decisions that contradict SPEC.md without flagging the conflict first.
+There is **no authentication** — the app opens directly to the garden. This is a single-user, self-hosted tool.
+
+Full specification is in `SPEC.md`. Read that file for all design decisions, schema, API shapes, and component inventory. Do not make decisions that contradict `SPEC.md` without flagging the conflict first.
 
 ---
 
@@ -17,7 +19,7 @@ Full specification is in `SPEC.md`. Read that file for all design decisions, sch
 ### Before writing any code
 1. Check which phase of `SPEC.md § BUILD_ORDER` is complete and which is next.
 2. Never skip phases. Phase N must compile and run before Phase N+1 begins.
-3. If you are resuming a session, ask: "Which phase was last completed?" before proceeding.
+3. If you are resuming a session, check git status and recent commits to understand what is already done.
 
 ### While writing code
 - Match file paths exactly to `SPEC.md § FILE_STRUCTURE`. No new files without justification.
@@ -82,16 +84,20 @@ Then stop and wait for confirmation before proceeding to the next phase.
 
 ### LLM system
 - The app must work with zero LLM configuration. Test this assumption frequently.
+- Default provider: OpenRouter (`perplexity/sonar-pro`) — model has live web search, ideal for enrichment.
+- Other supported providers: Anthropic, Ollama. All implement the `LLMProvider` interface in `lib/llm/providers/`.
 - Never call `enrichMetadata()` without first checking `getProvider() !== null`.
 - Enrich button only renders if `GET /api/llm/status` returns `available: true`.
 - LLM errors are caught in `lib/llm/enricher.ts` — they never propagate to the UI.
+- LLM responses may wrap JSON in markdown fences — always strip before parsing.
 - Adding a new LLM provider = implement `LLMProvider` interface in `lib/llm/providers/` + register in `registry.ts`. Nothing else changes.
+- Enrichment produces: `title`, `synopsis` (5–8 sentences), `facts` (3–5 bullet points), `opinions` (2–3 sentences on reception), `genre`, `mood` (array), `sourceType`, `aiTags` (array).
 
 ### Scraping system
+- Scraping is OG-tag only: title, author, thumbnail, rawDescription via `got` + `cheerio`.
 - `scraper.ts` never throws. It always returns a `ScrapedMetadata` object, even if partially empty.
-- `ytdlp.ts` returns `null` on failure. `scraper.ts` handles null gracefully.
-- `search.ts` returns `''` on failure. Never blocks the scrape pipeline.
-- The three-tier pipeline order is: OG/oEmbed/yt-dlp → SearXNG fallback if thin → LLM (manual only).
+- There is no yt-dlp, no SearXNG, no oembed, no file parser. Do not re-introduce these.
+- LLM enrichment is the primary source of rich content data, not scraping.
 
 ---
 
@@ -137,23 +143,17 @@ Does this component:
 ## API route conventions
 
 ```ts
-// Standard shape for every route handler:
+// Standard shape for every route handler (no auth — single-user self-hosted app):
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authConfig } from '@/lib/auth/config'
 import { z } from 'zod'
 
 export async function POST(req: NextRequest) {
-  // 1. Auth check
-  const session = await getServerSession(authConfig)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  // 2. Parse + validate body
+  // 1. Parse + validate body
   const body = await req.json()
   const result = MySchema.safeParse(body)
   if (!result.success) return NextResponse.json({ error: result.error }, { status: 400 })
 
-  // 3. Business logic
+  // 2. Business logic
   try {
     const data = await doSomething(result.data)
     return NextResponse.json({ data })
@@ -224,6 +224,9 @@ npm run db:studio             # open Drizzle Studio
 | Forgetting `dark:` variants | Every color class needs a dark mode counterpart |
 | Making enrich button visible with no LLM configured | Check `/api/llm/status` first |
 | Throwing from `scraper.ts` or `enricher.ts` | Catch internally, return null/empty |
+| Adding auth checks to routes | No auth in this app — single-user, self-hosted |
+| Re-introducing yt-dlp, SearXNG, oembed, or file upload | Scraping is OG-only; LLM handles enrichment |
+| Parsing LLM JSON without stripping markdown fences | Strip ` ```json ` fences before `JSON.parse()` |
 | Creating a new file not in `SPEC.md § FILE_STRUCTURE` | Flag it and justify before creating |
 | Using `getServerSideProps` | Use async server component with direct DB call |
 | Forgetting `useReducedMotion()` check | Wrap every Framer Motion animation |

@@ -4,6 +4,9 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['better-sqlite3', 'pdf-parse'],
   },
+  images: {
+    remotePatterns: [{ protocol: 'https', hostname: '**' }, { protocol: 'http', hostname: '**' }],
+  },
 }
 
 export default nextConfig

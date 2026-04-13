@@ -31,6 +31,12 @@ export const pageVariants: Variants = {
   visible: { opacity: 1, transition: { duration: 0.2 } }
 }
 
+export const keywordPanelVariants: Variants = {
+  hidden:  { x: '100%', opacity: 0 },
+  visible: { x: 0, opacity: 1, transition: { duration: 0.28, ease: 'easeOut' } },
+  exit:    { x: '100%', opacity: 0, transition: { duration: 0.2, ease: 'easeIn' } }
+}
+
 export const statusBgVariants = {
   pending:  { backgroundColor: '#F1EFE8' },
   consumed: { backgroundColor: '#EAF3DE', transition: { duration: 0.2 } }

@@ -16,18 +16,19 @@ export interface Item {
   url:         string | null
   title:       string
   author:      string | null
-  sourceType:  SourceType
+  sourceType:  string
   genre:       string | null
   mood:        string | null
   synopsis:    string | null
+  keywords:    string | null   // JSON array of searchable proper nouns
   thumbnail:   string | null
   duration:    string | null
   recommender: string | null
-  status:      Status
+  status:      string | null
   notes:       string | null
   rating:      number | null
   aiTags:      string | null
-  enriched:    boolean
+  enriched:    boolean | null
   llmProvider: string | null
   createdAt:   string | null
   consumedAt:  string | null
@@ -44,25 +45,26 @@ export interface ScrapedMetadata {
   author:         string
   sourceType:     SourceType
   thumbnail:      string
-  synopsis:       string
   rawDescription: string
-  duration:       string
 }
 
 export interface EnrichedMetadata {
   title:      string
   synopsis:   string
+  keywords:   string[]
   mood:       string[]
   genre:      string
-  sourceType: SourceType
+  sourceType: string
   aiTags:     string[]
 }
 
-export interface CandidateItem {
-  title:       string
-  url:         string
-  recommender: string
-  sourceType:  SourceType
+export interface SearchResult {
+  heading:    string
+  abstract:   string
+  source:     string
+  sourceName: string
+  image:      string
+  related:    { text: string; url: string }[]
 }
 
 export interface ItemFilters {
@@ -74,16 +76,7 @@ export interface ItemFilters {
   q?:           string
 }
 
-// Zod schemas for API validation
-
-export const ItemFiltersSchema = z.object({
-  status:      z.string().optional(),
-  type:        z.string().optional(),
-  mood:        z.string().optional(),
-  genre:       z.string().optional(),
-  recommender: z.string().optional(),
-  q:           z.string().optional(),
-})
+// Zod schemas
 
 export const CreateItemSchema = z.object({
   url:         z.string().url().optional().nullable(),
@@ -93,6 +86,7 @@ export const CreateItemSchema = z.object({
   genre:       z.string().optional().nullable(),
   mood:        z.string().optional().nullable(),
   synopsis:    z.string().optional().nullable(),
+  keywords:    z.string().optional().nullable(),
   thumbnail:   z.string().optional().nullable(),
   duration:    z.string().optional().nullable(),
   recommender: z.string().optional().nullable(),
@@ -111,6 +105,7 @@ export const PatchItemSchema = z.object({
   genre:       z.string().optional().nullable(),
   mood:        z.string().optional().nullable(),
   synopsis:    z.string().optional().nullable(),
+  keywords:    z.string().optional().nullable(),
   thumbnail:   z.string().optional().nullable(),
   duration:    z.string().optional().nullable(),
   recommender: z.string().optional().nullable(),
@@ -122,23 +117,6 @@ export const PatchItemSchema = z.object({
   llmProvider: z.string().optional().nullable(),
 })
 
-export const IngestUrlSchema = z.object({
-  url: z.string().url(),
-})
-
-export const IngestEnrichSchema = z.object({
-  metadata: z.object({
-    url:            z.string(),
-    title:          z.string(),
-    author:         z.string().optional(),
-    sourceType:     z.string(),
-    thumbnail:      z.string().optional(),
-    synopsis:       z.string().optional(),
-    rawDescription: z.string().optional(),
-    duration:       z.string().optional(),
-  }),
-})
-
 export const IngestConfirmSchema = z.object({
   metadata: z.object({
     url:         z.string().optional().nullable(),
@@ -148,6 +126,7 @@ export const IngestConfirmSchema = z.object({
     genre:       z.string().optional().nullable(),
     mood:        z.string().optional().nullable(),
     synopsis:    z.string().optional().nullable(),
+    keywords:    z.string().optional().nullable(),
     thumbnail:   z.string().optional().nullable(),
     duration:    z.string().optional().nullable(),
     recommender: z.string().optional().nullable(),
