@@ -19,7 +19,7 @@ const shareTechMono = Share_Tech_Mono({
 
 export const metadata: Metadata = {
   title:       'HOKURYU',
-  description: 'ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM',
+  description: 'GRONE INDUSTRIES UNIFIED OPERATING SYSTEM',
 }
 
 // Always terminal dark — no light mode

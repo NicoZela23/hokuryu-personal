@@ -33,8 +33,16 @@ export class OpenRouterProvider implements LLMProvider {
 
     const text = response.choices[0]?.message?.content ?? ''
 
-    // Strip markdown code fences if model wraps response
-    const clean = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    // 1. Strip markdown code fences
+    let clean = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+
+    // 2. If model added prose before/after the JSON object, extract just the object
+    if (!clean.startsWith('{')) {
+      const match = clean.match(/\{[\s\S]*\}/)
+      if (!match) throw new Error(`model returned non-JSON: ${clean.slice(0, 120)}`)
+      clean = match[0]
+    }
+
     return JSON.parse(clean) as EnrichOutput
   }
 }

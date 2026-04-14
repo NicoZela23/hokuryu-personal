@@ -24,7 +24,7 @@ export default function GardenLayout({ children }: { children: React.ReactNode }
         {/* Terminal status bar — bottom of screen on large displays */}
         <div className="hidden 3xl:flex items-center justify-between px-6 py-1 border-t border-vault-border bg-vault-panel shrink-0">
           <span className="font-display text-sm text-phosphor-dim tracking-widest">
-            ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM — COPYRIGHT 2075 ROBCO INDUSTRIES
+            GRONE INDUSTRIES UNIFIED OPERATING SYSTEM — COPYRIGHT 2075 GRONE INDUSTRIES
           </span>
           <span className="font-display text-sm text-phosphor-dim tracking-widest">
             TERMINAL v1.0.6 &nbsp;·&nbsp; SYS:OK

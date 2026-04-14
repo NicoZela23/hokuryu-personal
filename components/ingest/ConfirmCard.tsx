@@ -130,7 +130,7 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
       {isEnriching ? (
         <div className="space-y-2 border-t border-vault-border/50 pt-3">
           <p className="font-display text-base text-phosphor-dim tracking-widest animate-blink">
-            ◌ AI ENRICHMENT IN PROGRESS...
+            ◌ ENRICHMENT IN PROGRESS...
           </p>
           <Skeleton className="w-full h-14" />
           <div className="flex gap-2">
@@ -183,7 +183,7 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
             disabled={isEnriching}
             className="font-display text-xl tracking-widest border border-amber/50 text-amber px-4 py-1 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-60"
           >
-            {isEnriching ? '◌ ENRICHING...' : '◈ AI ENRICH'}
+            {isEnriching ? '◌ ENRICHING...' : '◈ ENRICH'}
           </button>
         )}
 
