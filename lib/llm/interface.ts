@@ -24,7 +24,7 @@ export interface EnrichOutput {
 
 // Compact prompt — ~140 tokens vs the previous ~340.
 // Inline JSON schema avoids repeating field names as prose.
-export const SYSTEM_PROMPT = `Return ONLY valid JSON for the given content. No markdown, no code fences, no explanation.
+export const SYSTEM_PROMPT = `You are a media metadata assistant for a personal content tracker. Given a URL or title, research the item and return ONLY a valid JSON object. No markdown, no code fences, no explanation, no preamble — just the raw JSON.
 
 {"title":"clean title ≤80 chars","synopsis":"3-5 sentences: what it is, themes, why notable","keywords":["4-6 proper nouns — related titles, creators, key figures a curious reader would explore"],"genre":"single lowercase genre","mood":["1-3 from: chill|energetic|melancholic|uplifting|intense|introspective|fun|dark|romantic|inspiring"],"sourceType":"youtube|spotify|tiktok|instagram|x|article|podcast|film|book|concert|generic","aiTags":["3-5 tags"]}`
 

@@ -60,7 +60,7 @@ function SeedPanel({ item }: Props) {
             href={`/garden/${item.id}`}
             className="font-display text-lg tracking-widest border border-phosphor/40 text-phosphor px-3 py-0.5 hover:border-phosphor hover:bg-vault-active hover:glow transition-colors focus:outline-none shrink-0"
           >
-            ▸ OPEN FILE
+            ▸ OPEN
           </Link>
 
           {item.url && (
