@@ -1,4 +1,4 @@
-# Digi Hokuryu
+# Hokuryu
 
 A personal digital garden for tracking content you want to consume or have consumed — films, books, podcasts, articles, YouTube videos, and more. Drop a link, the app scrapes basic metadata and optionally enriches it with an AI-generated content profile: synopsis, facts, reception, genre, and mood tags. Everything lives on a growing timeline organized by month and season.
 
