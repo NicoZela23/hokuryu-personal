@@ -1,51 +1,42 @@
 import type { Metadata } from 'next'
-import { Inter, Lora } from 'next/font/google'
+import { VT323, Share_Tech_Mono } from 'next/font/google'
 import { Providers } from '@/components/Providers'
 import './globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
+const vt323 = VT323({
+  weight:   '400',
+  subsets:  ['latin'],
+  variable: '--font-vt323',
+  display:  'swap',
 })
 
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-lora',
-  display: 'swap',
+const shareTechMono = Share_Tech_Mono({
+  weight:   '400',
+  subsets:  ['latin'],
+  variable: '--font-share-tech-mono',
+  display:  'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'digi hokuryu',
-  description: 'things worth your time, planted by people who know you',
+  title:       'HOKURYU',
+  description: 'ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM',
 }
 
+// Always terminal dark — no light mode
 const themeScript = `
 (function() {
-  try {
-    var stored = localStorage.getItem('theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  } catch (e) {}
+  document.documentElement.classList.add('dark');
+  try { localStorage.setItem('theme', 'dark'); } catch(e) {}
 })();
 `
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        className={`${inter.variable} ${lora.variable} font-sans bg-paper dark:bg-forest text-ink dark:text-paper antialiased`}
-      >
+      <body className={`${vt323.variable} ${shareTechMono.variable} font-mono bg-vault text-phosphor antialiased`}>
         <Providers>
           {children}
         </Providers>

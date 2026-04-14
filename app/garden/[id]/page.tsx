@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { eq } from 'drizzle-orm'
@@ -20,31 +22,53 @@ export default async function ItemDetailPage({ params }: { params: { id: string 
   const item = row as unknown as Item
 
   return (
-    <main className="px-6 md:px-12 lg:px-20 py-8 max-w-2xl">
-      <Link
-        href="/garden"
-        className="text-moss dark:text-moss-mid text-sm mb-6 inline-block hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-moss rounded"
-      >
-        ← back to garden
-      </Link>
-
-      <div className="space-y-8">
-        <div className="space-y-3">
-          <ItemHero item={item} />
-          <ItemEditForm item={item} />
+    <main className="flex-1 px-4 md:px-8 lg:px-10 py-6 overflow-y-auto">
+      <div className="max-w-5xl mx-auto">
+        {/* Back + record header */}
+        <div className="mb-4">
+          <Link
+            href="/garden"
+            className="font-display text-lg text-phosphor-dim tracking-widest hover:text-phosphor transition-colors focus:outline-none"
+          >
+            ← BACK TO GARDEN
+          </Link>
         </div>
 
-        <ItemMeta item={item} />
+        <div className="mb-5 border-b border-vault-border pb-3">
+          <span className="font-display text-base text-phosphor-dim tracking-widest">
+            RECORD #{String(item.id).padStart(4, '0')} &nbsp;·&nbsp;
+            {item.status === 'consumed' ? (
+              <span className="text-phosphor-dim">[COMPLETED]</span>
+            ) : (
+              <span className="text-amber">[ ACTIVE ]</span>
+            )}
+          </span>
+        </div>
 
-        {item.synopsis && (
-          <p className="text-base leading-relaxed max-w-prose text-ink dark:text-paper font-sans">
-            {item.synopsis}
-          </p>
-        )}
+        {/* 2-column on xl+: left = hero/synopsis/notes, right = meta/actions/edit */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
+          {/* Left column */}
+          <div className="space-y-5">
+            <ItemHero item={item} />
 
-        <ItemNotes item={item} />
+            {item.synopsis && (
+              <div className="border-l-2 border-phosphor-dim pl-4">
+                <p className="font-mono text-sm text-cream-mid leading-relaxed">
+                  {item.synopsis}
+                </p>
+              </div>
+            )}
 
-        <ItemActions item={item} />
+            <ItemNotes item={item} />
+          </div>
+
+          {/* Right column */}
+          <div className="space-y-5">
+            <ItemMeta item={item} />
+            <ItemActions item={item} />
+            <ItemEditForm item={item} />
+          </div>
+        </div>
       </div>
     </main>
   )

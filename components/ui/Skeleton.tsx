@@ -10,14 +10,14 @@ function Skeleton({ className = '', lines = 1 }: Props) {
         {Array.from({ length: lines }).map((_, i) => (
           <div
             key={i}
-            className={`h-4 bg-ink-faint dark:bg-moss-ink/40 rounded animate-pulse ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
+            className={`h-4 bg-vault-border/60 animate-pulse ${i === lines - 1 ? 'w-3/4' : 'w-full'}`}
           />
         ))}
       </div>
     )
   }
   return (
-    <div className={`h-4 bg-ink-faint dark:bg-moss-ink/40 rounded animate-pulse ${className}`} />
+    <div className={`h-4 bg-vault-border/60 animate-pulse ${className}`} />
   )
 }
 

@@ -1,35 +1,37 @@
 'use client'
 
 type Props = {
-  rating:      number | null
+  rating:       number | null
   interactive?: boolean
-  onChange?:   (rating: number) => void
+  onChange?:    (rating: number) => void
 }
 
 function RatingDots({ rating, interactive = false, onChange }: Props) {
+  const bars = [1, 2, 3, 4, 5]
+
   return (
-    <div className="flex items-center gap-1" aria-label={`Rating: ${rating ?? 0} of 5`}>
-      {[1, 2, 3, 4, 5].map((dot) => {
-        const filled = rating !== null && dot <= rating
+    <div className="flex items-center gap-0.5" aria-label={`Rating: ${rating ?? 0} of 5`}>
+      {bars.map((bar) => {
+        const filled = rating !== null && bar <= rating
         if (interactive) {
           return (
             <button
-              key={dot}
-              onClick={() => onChange?.(dot)}
-              aria-label={`Rate ${dot}`}
-              className={`w-2 h-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-moss ${
+              key={bar}
+              onClick={() => onChange?.(bar)}
+              aria-label={`Rate ${bar}`}
+              className={`w-3 h-3.5 transition-all focus:outline-none focus:ring-1 focus:ring-phosphor ${
                 filled
-                  ? 'bg-moss dark:bg-moss-mid'
-                  : 'bg-ink-faint dark:bg-moss-ink/40 hover:bg-moss/50'
+                  ? 'bg-phosphor shadow-glow-sm'
+                  : 'bg-vault-border hover:bg-phosphor-dim'
               }`}
             />
           )
         }
         return (
           <span
-            key={dot}
-            className={`w-2 h-2 rounded-full ${
-              filled ? 'bg-moss dark:bg-moss-mid' : 'bg-ink-faint dark:bg-moss-ink/40'
+            key={bar}
+            className={`inline-block w-3 h-3.5 ${
+              filled ? 'bg-phosphor' : 'bg-vault-border'
             }`}
           />
         )

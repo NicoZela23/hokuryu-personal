@@ -21,7 +21,6 @@ function ItemEditForm({ item }: Props) {
   const [recommender, setRecommender] = useState(item.recommender ?? '')
 
   function handleOpen() {
-    // Reset to current item values every time the form opens
     setTitle(item.title)
     setAuthor(item.author ?? '')
     setUrl(item.url ?? '')
@@ -52,86 +51,103 @@ function ItemEditForm({ item }: Props) {
     return (
       <button
         onClick={handleOpen}
-        className="text-xs text-ink-muted dark:text-ink-muted hover:text-moss dark:hover:text-moss-mid transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded"
+        className="font-display text-base tracking-widest text-phosphor-dim hover:text-phosphor transition-colors focus:outline-none"
       >
-        edit details
+        &gt; EDIT RECORD DATA
       </button>
     )
   }
 
+  const inputClass = 'w-full bg-vault font-mono text-sm text-phosphor border border-vault-border px-3 py-2 focus:outline-none focus:border-phosphor placeholder:text-phosphor-dim transition-colors'
+  const labelClass = 'font-display text-base text-phosphor-dim tracking-widest'
+
   return (
-    <div className="p-4 rounded-lg border border-ink-faint dark:border-moss-ink/30 bg-paper-dark dark:bg-forest-card space-y-3">
-      <p className="text-xs font-medium text-ink-muted dark:text-ink-muted uppercase tracking-wider">
-        edit details
+    <div className="border border-vault-border bg-vault-panel p-4 space-y-4">
+      <p className="font-display text-lg text-phosphor-dim tracking-widest border-b border-vault-border pb-2">
+        ■ EDIT RECORD
       </p>
 
-      <div className="space-y-2">
-        {/* Title */}
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="title"
-          className="w-full text-sm bg-transparent border-b border-ink-faint dark:border-moss-ink/30 text-ink dark:text-paper placeholder:text-ink-muted pb-1 focus:outline-none focus:border-moss"
-        />
-
-        {/* Author + Type */}
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-3">
+        <div>
+          <label className={labelClass}>TITLE</label>
           <input
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            placeholder="author / creator"
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="record title"
+            className={`${inputClass} mt-1`}
           />
-          <select
-            value={sourceType}
-            onChange={(e) => setSourceType(e.target.value as SourceType)}
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-moss"
-          >
-            {SOURCE_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
         </div>
 
-        {/* URL */}
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="url (optional)"
-          className="w-full text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss font-mono"
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelClass}>AUTHOR</label>
+            <input
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="author / creator"
+              className={`${inputClass} mt-1`}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>TYPE</label>
+            <select
+              value={sourceType}
+              onChange={(e) => setSourceType(e.target.value as SourceType)}
+              className={`${inputClass} mt-1`}
+            >
+              {SOURCE_TYPES.map((t) => (
+                <option key={t} value={t}>{t.toUpperCase()}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-        {/* Genre + Recommender */}
-        <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className={labelClass}>URL</label>
           <input
-            value={genre}
-            onChange={(e) => setGenre(e.target.value)}
-            placeholder="genre"
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://..."
+            className={`${inputClass} mt-1`}
           />
-          <input
-            value={recommender}
-            onChange={(e) => setRecommender(e.target.value)}
-            placeholder="recommended by"
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
-          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelClass}>GENRE</label>
+            <input
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              placeholder="genre"
+              className={`${inputClass} mt-1`}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>SOURCE</label>
+            <input
+              value={recommender}
+              onChange={(e) => setRecommender(e.target.value)}
+              placeholder="recommended by"
+              className={`${inputClass} mt-1`}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pt-2 border-t border-vault-border/50">
         <button
           onClick={handleSave}
           disabled={!title.trim() || updateItem.isPending}
-          className="text-sm px-4 py-1.5 bg-moss text-white rounded hover:bg-moss-dark transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-50"
+          className="font-display text-lg tracking-widest border border-phosphor text-phosphor px-4 py-1 hover:bg-vault-active transition-colors focus:outline-none disabled:opacity-50"
         >
-          {updateItem.isPending ? 'saving...' : 'save'}
+          {updateItem.isPending ? '◌ SAVING...' : '▸ SAVE'}
         </button>
         <button
           onClick={() => setOpen(false)}
-          className="text-sm text-ink-muted dark:text-ink-muted hover:text-ink dark:hover:text-paper transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded"
+          className="font-display text-lg tracking-widest text-phosphor-dim hover:text-phosphor transition-colors focus:outline-none"
         >
-          cancel
+          CANCEL
         </button>
       </div>
     </div>

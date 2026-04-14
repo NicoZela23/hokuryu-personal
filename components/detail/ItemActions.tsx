@@ -10,8 +10,8 @@ import type { Item } from '@/lib/utils/types'
 type Props = { item: Item }
 
 function enrichHint(item: Item): { ok: boolean; hint: string } {
-  if (!item.title.trim())        return { ok: false, hint: 'add a title to enrich' }
-  if (!item.url && !item.author) return { ok: false, hint: 'add a url or author so AI has something to search' }
+  if (!item.title.trim())        return { ok: false, hint: 'TITLE REQUIRED TO ENRICH' }
+  if (!item.url && !item.author) return { ok: false, hint: 'ADD URL OR AUTHOR SO AI HAS DATA TO SEARCH' }
   return { ok: true, hint: '' }
 }
 
@@ -43,13 +43,17 @@ function ItemActions({ item }: Props) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="border border-vault-border bg-vault-panel p-4 space-y-3">
+      <p className="font-display text-lg text-phosphor-dim tracking-widest border-b border-vault-border pb-2">
+        ■ ACTIONS
+      </p>
+
       <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={toggleStatus}
-          className="text-sm px-4 py-2 border border-moss dark:border-moss-mid text-moss dark:text-moss-mid rounded hover:bg-moss hover:text-white dark:hover:bg-moss-mid dark:hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-moss"
+          className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-4 py-1 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
         >
-          {item.status === 'consumed' ? 'mark as pending' : 'mark as consumed'}
+          {item.status === 'consumed' ? '▸ MARK ACTIVE' : '▸ MARK COMPLETE'}
         </button>
 
         {item.url && (
@@ -57,52 +61,53 @@ function ItemActions({ item }: Props) {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm px-4 py-2 border border-moss dark:border-moss-mid text-moss dark:text-moss-mid rounded hover:bg-moss hover:text-white dark:hover:bg-moss-mid dark:hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-moss"
+            className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-4 py-1 hover:border-amber hover:text-amber transition-colors focus:outline-none"
           >
-            open original ↗
+            SOURCE ↗
           </a>
         )}
 
         {!confirmDelete ? (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="text-sm text-red-500 hover:underline ml-auto focus:outline-none focus:ring-2 focus:ring-red-400 rounded"
+            className="font-display text-lg tracking-widest text-danger/60 hover:text-danger transition-colors ml-auto focus:outline-none"
           >
-            remove from garden
+            [DELETE RECORD]
           </button>
         ) : (
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-sm text-ink dark:text-paper">are you sure? this seed will be lost.</span>
+            <span className="font-display text-sm text-danger tracking-widest">
+              ⚠ CONFIRM DELETION?
+            </span>
             <button
               onClick={handleDelete}
-              className="text-sm text-red-500 hover:underline focus:outline-none focus:ring-2 focus:ring-red-400 rounded"
+              className="font-display text-lg tracking-widest text-danger hover:glow-danger transition-all focus:outline-none"
             >
-              yes, remove
+              CONFIRM
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="text-sm text-ink-muted dark:text-ink-muted hover:underline focus:outline-none focus:ring-2 focus:ring-moss rounded"
+              className="font-display text-lg tracking-widest text-phosphor-dim hover:text-phosphor transition-colors focus:outline-none"
             >
-              cancel
+              CANCEL
             </button>
           </div>
         )}
       </div>
 
-      {/* Enrich row — only shown when LLM is available and item not yet enriched */}
       {llm?.available && !item.enriched && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pt-2 border-t border-vault-border/50">
           {hint.ok ? (
             <button
               onClick={handleEnrich}
               disabled={enrichItem.isPending}
-              className="text-sm px-4 py-2 border border-moss-mid/60 dark:border-moss-mid/60 text-moss dark:text-moss-mid rounded hover:bg-moss-light dark:hover:bg-moss-ink/30 transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-50"
+              className="font-display text-lg tracking-widest border border-amber/50 text-amber px-4 py-1 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-50"
             >
-              {enrichItem.isPending ? 'enriching...' : 'enrich with AI'}
+              {enrichItem.isPending ? '◌ ENRICHING...' : '◈ ENRICH WITH AI'}
             </button>
           ) : (
-            <p className="text-xs text-ink-muted dark:text-ink-muted italic">
-              to enrich: {hint.hint}
+            <p className="font-display text-sm text-danger tracking-widest">
+              ✗ {hint.hint}
             </p>
           )}
         </div>

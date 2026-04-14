@@ -4,23 +4,8 @@ import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { Item } from '@/lib/utils/types'
 
-const seedBg: Record<string, string> = {
-  youtube:   'bg-seed-youtube/20',
-  spotify:   'bg-seed-spotify/20',
-  tiktok:    'bg-seed-tiktok/20',
-  instagram: 'bg-seed-instagram/20',
-  x:         'bg-seed-generic/20',
-  article:   'bg-seed-article/20',
-  podcast:   'bg-seed-podcast/20',
-  film:      'bg-seed-film/20',
-  book:      'bg-seed-book/20',
-  concert:   'bg-seed-concert/20',
-  generic:   'bg-seed-generic/20',
-}
-
 function ItemHero({ item }: { item: Item }) {
   const shouldReduce = useReducedMotion()
-  const bg = seedBg[item.sourceType] ?? 'bg-seed-generic/20'
 
   return (
     <div>
@@ -28,26 +13,42 @@ function ItemHero({ item }: { item: Item }) {
         <motion.div
           initial={shouldReduce ? {} : { opacity: 0 }}
           animate={shouldReduce ? {} : { opacity: 1 }}
-          className="relative w-full max-h-64 h-64 rounded-lg overflow-hidden shadow-sm"
+          className="relative w-full h-56 overflow-hidden bg-vault-border/20"
         >
           <Image
             src={item.thumbnail}
             alt=""
             fill
-            className="object-cover"
+            className="object-cover opacity-60"
             unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-vault/80 via-transparent to-transparent" />
+          {/* Scanline overlay on image */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px)',
+            }}
           />
         </motion.div>
       ) : (
-        <div className={`w-full h-64 rounded-lg ${bg}`} />
+        <div className="w-full h-32 border border-vault-border bg-vault-panel flex items-center justify-center">
+          <span className="font-display text-xl text-vault-border tracking-widest">
+            [ NO IMAGE DATA ]
+          </span>
+        </div>
       )}
 
-      <h1 className="font-serif text-3xl text-ink dark:text-paper mt-4 leading-tight">
-        {item.title}
-      </h1>
-      {item.author && (
-        <p className="text-ink-muted dark:text-ink-muted text-sm mt-1">{item.author}</p>
-      )}
+      <div className="mt-4 space-y-1">
+        <h1 className="font-display text-4xl md:text-5xl text-phosphor glow tracking-wider leading-tight">
+          {item.title.toUpperCase()}
+        </h1>
+        {item.author && (
+          <p className="font-mono text-sm text-cream-dim">
+            BY: {item.author}
+          </p>
+        )}
+      </div>
     </div>
   )
 }

@@ -12,8 +12,8 @@ import type { Item } from '@/lib/utils/types'
 type Props = { onSaved: (item: Item) => void }
 
 function ManualEntryForm({ onSaved }: Props) {
-  const shouldReduce = useReducedMotion()
-  const confirmItem = useConfirmItem()
+  const shouldReduce  = useReducedMotion()
+  const confirmItem   = useConfirmItem()
   const { data: llm } = useLLMStatus()
 
   const [title, setTitle]             = useState('')
@@ -42,6 +42,9 @@ function ManualEntryForm({ onSaved }: Props) {
     onSaved(result.item)
   }
 
+  const inputClass = 'w-full bg-vault font-mono text-sm text-phosphor border border-vault-border px-3 py-2 focus:outline-none focus:border-phosphor placeholder:text-phosphor-dim transition-colors'
+  const labelClass = 'font-display text-base text-phosphor-dim tracking-widest'
+
   return (
     <motion.div
       variants={variants}
@@ -50,95 +53,104 @@ function ManualEntryForm({ onSaved }: Props) {
       exit="exit"
       className="overflow-hidden"
     >
-      <form onSubmit={handleSubmit} className="mt-3 p-4 bg-paper-dark dark:bg-forest-card border border-ink-faint dark:border-moss-ink/20 rounded-r-lg space-y-3">
-        <p className="text-xs font-medium text-ink-muted dark:text-ink-muted uppercase tracking-widest">add manually</p>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label className={labelClass}>TITLE *</label>
+          <input
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="record title"
+            className={`${inputClass} mt-1`}
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2">
-            <input
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="title"
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
-            />
-          </div>
-
           <div>
+            <label className={labelClass}>TYPE</label>
             <select
               value={sourceType}
               onChange={(e) => setSourceType(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-moss"
+              className={`${inputClass} mt-1`}
             >
               {SOURCE_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>{t.toUpperCase()}</option>
               ))}
             </select>
           </div>
-
           <div>
+            <label className={labelClass}>SOURCE</label>
             <input
               value={recommender}
               onChange={(e) => setRecommender(e.target.value)}
               placeholder="recommended by"
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+              className={`${inputClass} mt-1`}
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-2 gap-3">
           <div>
+            <label className={labelClass}>URL</label>
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="url (optional)"
+              placeholder="https://... (optional)"
               type="url"
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+              className={`${inputClass} mt-1`}
             />
           </div>
-
           <div>
+            <label className={labelClass}>GENRE</label>
             <input
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              placeholder="genre (optional)"
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
-            />
-          </div>
-
-          <div className="col-span-2">
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="notes (optional)"
-              rows={2}
-              className="w-full px-3 py-2 text-sm bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss resize-none"
+              placeholder="genre"
+              className={`${inputClass} mt-1`}
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div>
+          <label className={labelClass}>NOTES</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="field notes (optional)"
+            rows={2}
+            className={`${inputClass} mt-1 resize-none`}
+          />
+        </div>
+
+        <div className="flex items-center gap-3 pt-1">
+          <span className={labelClass}>RATING</span>
           <RatingDots rating={rating} interactive onChange={setRating} />
-          <span className="text-xs text-ink-muted dark:text-ink-muted">rating</span>
+          <span className="font-display text-base text-phosphor-dim tracking-widest">
+            {rating ? `${rating}/5` : '—'}
+          </span>
         </div>
 
         {llm?.available && url && (
-          <label className="flex items-center gap-2 text-sm text-ink dark:text-paper cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={enrichAfter}
               onChange={(e) => setEnrichAfter(e.target.checked)}
-              className="accent-moss"
+              className="accent-phosphor"
             />
-            enrich after saving
+            <span className="font-display text-base text-phosphor-dim tracking-widest">
+              ENRICH AFTER SAVING
+            </span>
           </label>
         )}
 
-        <div className="flex items-center gap-3 pt-1">
+        <div className="pt-1">
           <button
             type="submit"
             disabled={confirmItem.isPending}
-            className="text-sm px-4 py-2 bg-moss text-white rounded hover:bg-moss-dark transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-60"
+            className="font-display text-xl tracking-widest border border-phosphor text-phosphor px-5 py-1 hover:bg-vault-active transition-colors focus:outline-none disabled:opacity-60"
           >
-            {confirmItem.isPending ? 'planting...' : 'plant this seed'}
+            {confirmItem.isPending ? '◌ PLANTING...' : '▸ PLANT THIS SEED'}
           </button>
         </div>
       </form>

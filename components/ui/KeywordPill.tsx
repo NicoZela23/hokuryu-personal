@@ -15,7 +15,7 @@ function KeywordPill({ keyword }: Props) {
   const [loading, setLoading] = useState(false)
   const shouldReduce          = useReducedMotion()
 
-  const panelVariants = shouldReduce
+  const panelVars = shouldReduce
     ? { hidden: {}, visible: {}, exit: {} }
     : keywordPanelVariants
 
@@ -39,9 +39,9 @@ function KeywordPill({ keyword }: Props) {
     <>
       <button
         onClick={handleOpen}
-        className="text-xs px-2.5 py-1 rounded-full border border-moss/50 dark:border-moss-mid/50 text-moss dark:text-moss-mid hover:bg-moss-light dark:hover:bg-moss-ink/30 transition-colors focus:outline-none focus:ring-2 focus:ring-moss"
+        className="font-display text-base tracking-widest text-amber border border-amber/50 px-2 py-0 leading-snug hover:border-amber hover:text-amber-bright hover:glow-amber transition-colors focus:outline-none"
       >
-        {keyword}
+        &gt; {keyword}
       </button>
 
       <AnimatePresence>
@@ -54,26 +54,30 @@ function KeywordPill({ keyword }: Props) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-40 bg-ink/20 dark:bg-ink/50 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-vault/70"
             />
 
             <motion.aside
               key="panel"
-              variants={panelVariants}
+              variants={panelVars}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm bg-paper dark:bg-forest-card border-l border-ink-faint dark:border-moss-ink/30 shadow-2xl flex flex-col"
+              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm bg-vault-panel border-l border-vault-border flex flex-col"
+              style={{ boxShadow: '-4px 0 24px rgba(0,0,0,0.8)' }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-ink-faint dark:border-moss-ink/20 shrink-0">
-                <span className="text-sm font-medium text-ink dark:text-paper">{keyword}</span>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-vault-border shrink-0">
+                <div>
+                  <p className="font-display text-xs text-phosphor-dim tracking-widest">INTEL QUERY</p>
+                  <span className="font-display text-2xl text-phosphor glow tracking-wider">{keyword.toUpperCase()}</span>
+                </div>
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="close"
-                  className="text-xl leading-none text-ink-muted hover:text-ink dark:hover:text-paper transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded"
+                  className="font-display text-2xl text-phosphor-dim hover:text-danger transition-colors focus:outline-none"
                 >
-                  ×
+                  ✕
                 </button>
               </div>
 
@@ -82,7 +86,7 @@ function KeywordPill({ keyword }: Props) {
 
                 {loading && (
                   <div className="space-y-3">
-                    <Skeleton className="w-full h-40 rounded-lg" />
+                    <Skeleton className="w-full h-32" />
                     <Skeleton className="w-full h-4" />
                     <Skeleton className="w-full h-4" />
                     <Skeleton className="w-3/4 h-4" />
@@ -90,24 +94,23 @@ function KeywordPill({ keyword }: Props) {
                 )}
 
                 {!loading && error && (
-                  <p className="text-sm text-ink-muted dark:text-ink-muted">
-                    Could not load results for this keyword.
+                  <p className="font-mono text-sm text-danger">
+                    &gt; ERROR: NO RECORDS FOUND FOR THIS QUERY.
                   </p>
                 )}
 
                 {!loading && result && (
                   <>
-                    {/* Abstract card */}
                     {result.abstract ? (
                       <div className="space-y-3">
                         {result.image && (
                           <img
                             src={result.image}
                             alt=""
-                            className="w-full h-40 object-cover rounded-lg bg-ink-faint/20 dark:bg-moss-ink/20"
+                            className="w-full h-36 object-cover bg-vault-border/30"
                           />
                         )}
-                        <p className="text-sm text-ink dark:text-paper/90 leading-relaxed">
+                        <p className="font-mono text-sm text-cream-mid leading-relaxed">
                           {result.abstract}
                         </p>
                         {result.source && (
@@ -115,23 +118,22 @@ function KeywordPill({ keyword }: Props) {
                             href={result.source}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-ink-muted dark:text-ink-muted hover:text-moss dark:hover:text-moss-mid transition-colors"
+                            className="font-display text-base text-amber tracking-wider hover:glow-amber transition-all"
                           >
-                            {result.sourceName || 'source'} ↗
+                            &gt; SOURCE: {result.sourceName || 'LINK'} ↗
                           </a>
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-ink-muted dark:text-ink-muted">
-                        No summary found for this keyword.
+                      <p className="font-mono text-sm text-phosphor-dim">
+                        &gt; NO INTELLIGENCE DATA AVAILABLE.
                       </p>
                     )}
 
-                    {/* Related topics */}
                     {result.related.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-xs font-medium text-ink-muted dark:text-ink-muted uppercase tracking-wider">
-                          related
+                        <p className="font-display text-lg text-phosphor-dim tracking-widest">
+                          RELATED ENTRIES
                         </p>
                         {result.related.map((r, i) => (
                           <a
@@ -139,7 +141,7 @@ function KeywordPill({ keyword }: Props) {
                             href={r.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="block px-3 py-2.5 rounded-lg bg-paper-dark dark:bg-forest border border-ink-faint dark:border-moss-ink/20 text-xs text-ink dark:text-paper/80 hover:border-moss dark:hover:border-moss-mid transition-colors leading-relaxed"
+                            className="block px-3 py-2 border border-vault-border text-sm text-cream-mid font-mono hover:border-phosphor hover:text-cream transition-colors leading-relaxed"
                           >
                             {r.text}
                           </a>

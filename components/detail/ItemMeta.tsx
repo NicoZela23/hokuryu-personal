@@ -16,57 +16,65 @@ function ItemMeta({ item }: { item: Item }) {
 
   type Row = { label: string; value: React.ReactNode }
   const rows: Row[] = ([
-    { label: 'type',        value: <TypeBadge type={item.sourceType} /> },
-    item.genre       ? { label: 'genre',       value: <span>{item.genre}</span> } : null,
-    item.recommender ? { label: 'from',        value: <span className="text-moss dark:text-moss-mid font-medium">{item.recommender}</span> } : null,
-    item.createdAt   ? { label: 'added',       value: <span>{formatDate(item.createdAt)}</span> } : null,
-    item.consumedAt  ? { label: 'consumed',    value: <span>{formatDate(item.consumedAt)}</span> } : null,
-    item.duration    ? { label: 'duration',    value: <span>{formatDuration(item.duration)}</span> } : null,
-    item.llmProvider ? { label: 'enriched by', value: <span className="text-ink-muted dark:text-ink-muted">{item.llmProvider}</span> } : null,
+    { label: 'TYPE',        value: <TypeBadge type={item.sourceType} /> },
+    item.genre       ? { label: 'GENRE',       value: <span className="text-phosphor-mid">{item.genre.toUpperCase()}</span> } : null,
+    item.recommender ? { label: 'SOURCE',       value: <span className="text-amber">{item.recommender}</span> } : null,
+    item.createdAt   ? { label: 'LOGGED',       value: <span>{formatDate(item.createdAt)}</span> } : null,
+    item.consumedAt  ? { label: 'COMPLETED',     value: <span>{formatDate(item.consumedAt)}</span> } : null,
+    item.duration    ? { label: 'DURATION',     value: <span>{formatDuration(item.duration)}</span> } : null,
+    item.llmProvider ? { label: 'ENRICHED BY',  value: <span className="text-phosphor-dim">{item.llmProvider.toUpperCase()}</span> } : null,
   ] as (Row | null)[]).filter((r): r is Row => r !== null)
 
   return (
-    <div className="space-y-5">
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+    <div className="space-y-5 border border-vault-border bg-vault-panel p-4">
+      <p className="font-display text-lg text-phosphor-dim tracking-widest border-b border-vault-border pb-2">
+        ■ RECORD DATA
+      </p>
+
+      <dl className="space-y-1.5">
         {rows.map(({ label, value }) => (
-          <div key={label} className="contents">
-            <dt className="text-ink-muted dark:text-ink-muted">{label}</dt>
-            <dd className="text-ink dark:text-paper">{value}</dd>
+          <div key={label} className="flex items-baseline gap-3">
+            <dt className="font-display text-base text-phosphor-dim tracking-widest w-28 shrink-0">{label}</dt>
+            <dd className="font-mono text-sm text-cream">{value}</dd>
           </div>
         ))}
       </dl>
 
       {moodList.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {moodList.map((m) => (
-            <span
-              key={m}
-              className="text-xs px-2.5 py-1 rounded-full bg-moss-light dark:bg-moss-ink/30 text-moss-dark dark:text-moss-mid"
-            >
-              {m}
-            </span>
-          ))}
+        <div>
+          <p className="font-display text-base text-phosphor-dim tracking-widest mb-2">MOOD</p>
+          <div className="flex flex-wrap gap-1.5">
+            {moodList.map((m) => (
+              <span
+                key={m}
+                className="font-display text-base tracking-widest text-phosphor border border-vault-border px-2 py-0 leading-snug"
+              >
+                {m.toUpperCase()}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
       {aiTagList.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {aiTagList.map((tag: string) => (
-            <span
-              key={tag}
-              className="text-xs px-2 py-0.5 rounded bg-ink-faint/60 dark:bg-moss-ink/20 text-ink-muted dark:text-ink-muted"
-            >
-              #{tag}
-            </span>
-          ))}
+        <div>
+          <p className="font-display text-base text-phosphor-dim tracking-widest mb-2">AI TAGS</p>
+          <div className="flex flex-wrap gap-1.5">
+            {aiTagList.map((tag: string) => (
+              <span
+                key={tag}
+                className="font-mono text-xs text-phosphor-dim border border-vault-border/50 px-2 py-0.5"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
       {keywordList.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-medium text-ink-muted dark:text-ink-muted uppercase tracking-wider">
-            explore
-          </p>
+        <div>
+          <p className="font-display text-base text-phosphor-dim tracking-widest mb-2">INTEL KEYWORDS</p>
           <div className="flex flex-wrap gap-2">
             {keywordList.map((kw: string) => (
               <KeywordPill key={kw} keyword={kw} />

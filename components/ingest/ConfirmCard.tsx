@@ -18,9 +18,9 @@ type Props = {
 }
 
 function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
-  const shouldReduce = useReducedMotion()
-  const confirm = useConfirmItem()
-  const enrich  = useEnrich()
+  const shouldReduce  = useReducedMotion()
+  const confirm       = useConfirmItem()
+  const enrich        = useEnrich()
   const { data: llm } = useLLMStatus()
 
   const [title, setTitle]             = useState(metadata.title)
@@ -73,17 +73,24 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
     onConfirm(result.item)
   }
 
+  const inputClass = 'w-full bg-vault font-mono text-sm text-phosphor border border-vault-border px-3 py-2 focus:outline-none focus:border-phosphor placeholder:text-phosphor-dim transition-colors'
+
   return (
     <motion.div
       variants={variants}
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="mt-3 p-4 bg-paper-dark dark:bg-forest-card border border-ink-faint dark:border-moss-ink/20 rounded-r-lg space-y-3"
+      className="mt-3 border border-vault-border bg-vault-panel p-4 space-y-4"
     >
+      <p className="font-display text-lg text-phosphor-dim tracking-widest border-b border-vault-border pb-2">
+        ■ CONFIRM NEW RECORD
+      </p>
+
       {metadata.thumbnail && (
-        <div className="relative w-full h-40 rounded overflow-hidden bg-ink-faint/30 dark:bg-moss-ink/20">
-          <Image src={metadata.thumbnail} alt="" fill className="object-cover" unoptimized />
+        <div className="relative w-full h-36 overflow-hidden bg-vault-border/20">
+          <Image src={metadata.thumbnail} alt="" fill className="object-cover opacity-70" unoptimized />
+          <div className="absolute inset-0 bg-gradient-to-t from-vault-panel/80 to-transparent" />
         </div>
       )}
 
@@ -91,56 +98,62 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full text-sm font-medium bg-transparent border-b border-ink-faint dark:border-moss-ink/30 text-ink dark:text-paper pb-1 focus:outline-none focus:border-moss"
+          className={inputClass}
+          placeholder="title"
         />
         <div className="grid grid-cols-2 gap-2">
           <input
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            placeholder="author"
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+            placeholder="AUTHOR"
+            className={inputClass}
           />
           <select
             value={sourceType}
             onChange={(e) => setSourceType(e.target.value as typeof sourceType)}
-            className="text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper focus:outline-none focus:ring-2 focus:ring-moss"
+            className={inputClass}
           >
             {SOURCE_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>{t.toUpperCase()}</option>
             ))}
           </select>
         </div>
         <input
           value={recommender}
           onChange={(e) => setRecommender(e.target.value)}
-          placeholder="recommended by"
-          className="w-full text-xs px-2 py-1.5 bg-paper dark:bg-forest border border-ink-faint dark:border-moss-ink/30 rounded text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss"
+          placeholder="RECOMMENDED BY"
+          className={inputClass}
         />
       </div>
 
       {/* Enriched preview */}
       {isEnriching ? (
-        <div className="space-y-2">
-          <Skeleton className="w-full h-16" />
+        <div className="space-y-2 border-t border-vault-border/50 pt-3">
+          <p className="font-display text-base text-phosphor-dim tracking-widest animate-blink">
+            ◌ AI ENRICHMENT IN PROGRESS...
+          </p>
+          <Skeleton className="w-full h-14" />
           <div className="flex gap-2">
-            <Skeleton className="w-20 h-6 rounded-full" />
-            <Skeleton className="w-24 h-6 rounded-full" />
-            <Skeleton className="w-16 h-6 rounded-full" />
+            <Skeleton className="w-20 h-6" />
+            <Skeleton className="w-24 h-6" />
           </div>
         </div>
       ) : enriched ? (
-        <div className="space-y-3">
+        <div className="space-y-3 border-t border-vault-border/50 pt-3">
+          <p className="font-display text-base text-phosphor tracking-widest">◈ ENRICHMENT COMPLETE</p>
           {synopsis && (
-            <p className="text-xs text-ink dark:text-paper/80 leading-relaxed">{synopsis}</p>
+            <p className="font-mono text-xs text-cream-mid leading-relaxed border-l-2 border-vault-border pl-3">
+              {synopsis}
+            </p>
           )}
           {genre && (
-            <span className="text-xs text-ink-muted dark:text-ink-muted">{genre}</span>
+            <span className="font-display text-base text-phosphor-dim tracking-widest">{genre.toUpperCase()}</span>
           )}
           {mood && (
             <div className="flex flex-wrap gap-1">
               {mood.split(',').map((m) => (
-                <span key={m.trim()} className="text-xs px-2 py-0.5 rounded-full bg-moss-light dark:bg-moss-ink/30 text-moss dark:text-moss-mid">
-                  {m.trim()}
+                <span key={m.trim()} className="font-display text-base text-phosphor border border-vault-border px-2 py-0 tracking-widest">
+                  {m.trim().toUpperCase()}
                 </span>
               ))}
             </div>
@@ -155,30 +168,30 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
         </div>
       ) : null}
 
-      <div className="flex items-center gap-2 pt-1 flex-wrap">
+      <div className="flex items-center gap-3 pt-2 border-t border-vault-border/50 flex-wrap">
         <button
           onClick={handleConfirm}
           disabled={confirm.isPending}
-          className="text-sm px-4 py-2 bg-moss text-white rounded hover:bg-moss-dark transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-60"
+          className="font-display text-xl tracking-widest border border-phosphor text-phosphor px-4 py-1 hover:bg-vault-active transition-colors focus:outline-none disabled:opacity-60"
         >
-          {confirm.isPending ? 'planting...' : 'plant this seed'}
+          {confirm.isPending ? '◌ PLANTING...' : '▸ PLANT SEED'}
         </button>
 
         {llm?.available && !enriched && (
           <button
             onClick={handleEnrich}
             disabled={isEnriching}
-            className="text-sm px-3 py-2 border border-moss-mid dark:border-moss-mid text-moss dark:text-moss-mid rounded hover:bg-moss-light dark:hover:bg-moss-ink/30 transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-60"
+            className="font-display text-xl tracking-widest border border-amber/50 text-amber px-4 py-1 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-60"
           >
-            {isEnriching ? 'enriching...' : 'enrich with AI'}
+            {isEnriching ? '◌ ENRICHING...' : '◈ AI ENRICH'}
           </button>
         )}
 
         <button
           onClick={onDiscard}
-          className="text-sm text-ink-muted dark:text-ink-muted hover:text-ink dark:hover:text-paper transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded ml-auto"
+          className="font-display text-xl tracking-widest text-phosphor-dim hover:text-danger transition-colors focus:outline-none ml-auto"
         >
-          discard
+          [DISCARD]
         </button>
       </div>
     </motion.div>

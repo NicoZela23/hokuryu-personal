@@ -54,84 +54,99 @@ function AddBar() {
   }
 
   return (
-    <div className="px-6 md:px-12 lg:px-20 pt-6">
-      {/* Mode tabs */}
-      <div className="flex items-center gap-1 mb-3">
-        {(['url', 'manual'] as Mode[]).map((m) => (
-          <button
-            key={m}
-            onClick={() => switchMode(m)}
-            className={`text-xs px-3 py-1 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-moss ${
-              mode === m
-                ? 'bg-moss text-white dark:bg-moss-mid dark:text-forest'
-                : 'text-ink-muted dark:text-ink-muted hover:text-moss dark:hover:text-moss-mid'
-            }`}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
+    <div className="px-6 md:px-10 lg:px-12 pt-5 pb-2">
+      {/* Terminal prompt header */}
+      <div className="border border-vault-border bg-vault-panel p-4">
+        <p className="font-display text-xl text-phosphor-dim tracking-widest mb-3 border-b border-vault-border pb-2">
+          ■ INPUT TERMINAL
+        </p>
 
-      <AnimatePresence mode="wait">
-        {mode === 'url' && (
-          <div key="url">
-            <form onSubmit={handleUrlSubmit} className="flex gap-2">
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="drop a link, plant a seed..."
-                disabled={state === 'loading' || state === 'confirm'}
-                className="flex-1 px-4 py-2.5 text-sm bg-paper-dark dark:bg-forest-card border border-ink-faint dark:border-moss-ink/30 rounded-r-lg text-ink dark:text-paper placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-60 font-mono"
-              />
-              <button
-                type="submit"
-                disabled={state === 'loading' || state === 'confirm' || !url.trim()}
-                className="px-4 py-2.5 text-sm bg-moss text-white rounded hover:bg-moss-dark transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-60"
-              >
-                plant
-              </button>
-            </form>
+        {/* Mode tabs */}
+        <div className="flex items-center gap-1 mb-3">
+          {(['url', 'manual'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => switchMode(m)}
+              className={`font-display text-lg tracking-widest px-3 py-0.5 border transition-colors focus:outline-none ${
+                mode === m
+                  ? 'border-phosphor text-phosphor bg-vault-active'
+                  : 'border-vault-border text-phosphor-dim hover:border-phosphor-dim hover:text-phosphor'
+              }`}
+            >
+              {m.toUpperCase()}
+            </button>
+          ))}
+        </div>
 
-            {state === 'loading' && (
-              <div className="mt-3 p-4 bg-paper-dark dark:bg-forest-card border border-ink-faint dark:border-moss-ink/20 rounded-r-lg space-y-2">
-                <Skeleton className="w-3/4 h-5" />
-                <Skeleton className="w-1/2 h-4" />
-                <Skeleton className="w-full h-16" />
-              </div>
-            )}
-
-            {state === 'duplicate' && (
-              <div className="mt-3 px-4 py-2.5 text-sm text-ink-muted dark:text-ink-muted bg-paper-dark dark:bg-forest-card border border-ink-faint dark:border-moss-ink/20 rounded-r-lg flex items-center justify-between">
-                <span>already in your garden</span>
+        <AnimatePresence mode="wait">
+          {mode === 'url' && (
+            <div key="url">
+              <form onSubmit={handleUrlSubmit} className="flex gap-2">
+                <div className="flex-1 flex items-center border border-vault-border focus-within:border-phosphor transition-colors">
+                  <span className="font-display text-xl text-phosphor-dim px-3 select-none">&gt;_</span>
+                  <input
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="paste url to plant a seed..."
+                    disabled={state === 'loading' || state === 'confirm'}
+                    className="flex-1 py-2.5 bg-transparent font-mono text-sm text-phosphor focus:outline-none disabled:opacity-60 pr-3"
+                  />
+                </div>
                 <button
-                  onClick={() => { setState('idle'); setUrl('') }}
-                  className="text-moss dark:text-moss-mid text-xs hover:underline focus:outline-none"
+                  type="submit"
+                  disabled={state === 'loading' || state === 'confirm' || !url.trim()}
+                  className="font-display text-xl tracking-widest px-5 py-2 bg-phosphor text-vault hover:bg-phosphor-bright transition-colors focus:outline-none disabled:opacity-60"
                 >
-                  dismiss
+                  PLANT
                 </button>
-              </div>
-            )}
+              </form>
 
-            <AnimatePresence>
-              {state === 'confirm' && metadata && (
-                <ConfirmCard
-                  key="confirm"
-                  metadata={metadata}
-                  onConfirm={handleConfirmed}
-                  onDiscard={handleDiscard}
-                />
+              {state === 'loading' && (
+                <div className="mt-3 p-4 border border-vault-border space-y-2">
+                  <p className="font-display text-base text-phosphor-dim tracking-widest animate-blink">
+                    ◌ SCANNING TARGET URL...
+                  </p>
+                  <Skeleton className="w-3/4 h-4" />
+                  <Skeleton className="w-1/2 h-4" />
+                  <Skeleton className="w-full h-14" />
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        )}
 
-        {mode === 'manual' && (
-          <div key="manual">
-            <ManualEntryForm onSaved={() => switchMode('url')} />
-          </div>
-        )}
-      </AnimatePresence>
+              {state === 'duplicate' && (
+                <div className="mt-3 px-4 py-3 border border-amber/40 bg-amber-faint flex items-center justify-between">
+                  <span className="font-display text-lg text-amber tracking-widest">
+                    ⚠ RECORD ALREADY EXISTS IN ARCHIVE
+                  </span>
+                  <button
+                    onClick={() => { setState('idle'); setUrl('') }}
+                    className="font-display text-base text-amber/70 hover:text-amber tracking-widest focus:outline-none"
+                  >
+                    [DISMISS]
+                  </button>
+                </div>
+              )}
+
+              <AnimatePresence>
+                {state === 'confirm' && metadata && (
+                  <ConfirmCard
+                    key="confirm"
+                    metadata={metadata}
+                    onConfirm={handleConfirmed}
+                    onDiscard={handleDiscard}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {mode === 'manual' && (
+            <div key="manual">
+              <ManualEntryForm onSaved={() => switchMode('url')} />
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

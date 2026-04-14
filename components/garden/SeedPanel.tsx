@@ -12,22 +12,19 @@ import type { Item } from '@/lib/utils/types'
 type Props = { item: Item }
 
 function enrichHint(item: Item): { ok: boolean; hint: string } {
-  if (!item.title.trim())        return { ok: false, hint: 'add a title to enrich' }
-  if (!item.url && !item.author) return { ok: false, hint: 'add a url or author first' }
+  if (!item.title.trim())        return { ok: false, hint: 'TITLE REQUIRED' }
+  if (!item.url && !item.author) return { ok: false, hint: 'ADD URL OR AUTHOR FIRST' }
   return { ok: true, hint: '' }
 }
 
 function SeedPanel({ item }: Props) {
-  const shouldReduce = useReducedMotion()
-  const updateItem   = useUpdateItem()
-  const enrichItem   = useEnrichItem()
+  const shouldReduce  = useReducedMotion()
+  const updateItem    = useUpdateItem()
+  const enrichItem    = useEnrichItem()
   const { data: llm } = useLLMStatus()
 
-  const variants = shouldReduce
-    ? { hidden: {}, visible: {}, exit: {} }
-    : panelVariants
-
-  const hint = enrichHint(item)
+  const variants = shouldReduce ? { hidden: {}, visible: {}, exit: {} } : panelVariants
+  const hint     = enrichHint(item)
 
   function toggleStatus() {
     updateItem.mutate({
@@ -44,49 +41,49 @@ function SeedPanel({ item }: Props) {
       exit="exit"
       className="overflow-hidden"
     >
-      <div className="px-4 pb-4 pt-2 space-y-3 border-t border-ink-faint/50 dark:border-moss-ink/20">
+      <div className="px-4 pb-4 pt-2 space-y-3 border-t border-vault-border/50">
         {item.thumbnail && (
-          <div className="relative w-full h-36 rounded overflow-hidden bg-ink-faint/30 dark:bg-moss-ink/20">
-            <Image src={item.thumbnail} alt="" fill className="object-cover" unoptimized />
+          <div className="relative w-full h-36 overflow-hidden bg-vault-border/20">
+            <Image src={item.thumbnail} alt="" fill className="object-cover opacity-70" unoptimized />
+            <div className="absolute inset-0 bg-gradient-to-t from-vault-card/70 to-transparent" />
           </div>
         )}
 
         {item.synopsis && (
-          <p className="text-sm text-ink dark:text-paper/80 leading-relaxed">
+          <p className="font-mono text-sm text-cream-mid leading-relaxed border-l-2 border-vault-border pl-3">
             {item.synopsis}
           </p>
         )}
 
-        <div className="flex items-center gap-3 flex-wrap pt-1">
+        <div className="flex items-center gap-2 flex-wrap pt-1">
           <button
             onClick={toggleStatus}
-            className="text-sm px-3 py-1.5 rounded border border-moss dark:border-moss-mid text-moss dark:text-moss-mid hover:bg-moss hover:text-white dark:hover:bg-moss-mid dark:hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-moss"
+            className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-3 py-0.5 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
           >
-            {item.status === 'consumed' ? 'mark as pending' : 'mark as consumed'}
+            {item.status === 'consumed' ? '▸ MARK ACTIVE' : '▸ MARK COMPLETE'}
           </button>
 
-          {/* Enrich button — only when LLM available and item not yet enriched */}
           {llm?.available && !item.enriched && (
             hint.ok ? (
               <button
                 onClick={() => enrichItem.mutate(item)}
                 disabled={enrichItem.isPending}
-                className="text-sm px-3 py-1.5 rounded border border-moss-mid/60 dark:border-moss-mid/60 text-moss dark:text-moss-mid hover:bg-moss-light dark:hover:bg-moss-ink/30 transition-colors focus:outline-none focus:ring-2 focus:ring-moss disabled:opacity-50"
+                className="font-display text-lg tracking-widest border border-amber/50 text-amber px-3 py-0.5 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-50"
               >
-                {enrichItem.isPending ? 'enriching...' : 'enrich with AI'}
+                {enrichItem.isPending ? '◌ ENRICHING...' : '◈ AI ENRICH'}
               </button>
             ) : (
-              <span className="text-xs text-ink-muted dark:text-ink-muted italic">
-                {hint.hint}
+              <span className="font-display text-sm text-danger tracking-widest">
+                ✗ {hint.hint}
               </span>
             )
           )}
 
           <Link
             href={`/garden/${item.id}`}
-            className="text-sm text-ink-muted dark:text-ink-muted hover:text-moss dark:hover:text-moss-mid transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded"
+            className="font-display text-lg tracking-widest text-phosphor-dim hover:text-phosphor transition-colors focus:outline-none ml-auto"
           >
-            open full page →
+            OPEN FILE →
           </Link>
 
           {item.url && (
@@ -94,9 +91,9 @@ function SeedPanel({ item }: Props) {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-ink-muted dark:text-ink-muted hover:text-moss dark:hover:text-moss-mid transition-colors focus:outline-none focus:ring-2 focus:ring-moss rounded ml-auto"
+              className="font-display text-lg tracking-widest text-phosphor-dim hover:text-amber transition-colors focus:outline-none"
             >
-              open original ↗
+              SOURCE ↗
             </a>
           )}
         </div>
