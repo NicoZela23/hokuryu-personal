@@ -55,35 +55,12 @@ function SeedPanel({ item }: Props) {
           </p>
         )}
 
-        <div className="flex items-center gap-2 flex-wrap pt-1">
-          <button
-            onClick={toggleStatus}
-            className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-3 py-0.5 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
-          >
-            {item.status === 'consumed' ? '▸ MARK ACTIVE' : '▸ MARK COMPLETE'}
-          </button>
-
-          {llm?.available && !item.enriched && (
-            hint.ok ? (
-              <button
-                onClick={() => enrichItem.mutate(item)}
-                disabled={enrichItem.isPending}
-                className="font-display text-lg tracking-widest border border-amber/50 text-amber px-3 py-0.5 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-50"
-              >
-                {enrichItem.isPending ? '◌ ENRICHING...' : '◈ AI ENRICH'}
-              </button>
-            ) : (
-              <span className="font-display text-sm text-danger tracking-widest">
-                ✗ {hint.hint}
-              </span>
-            )
-          )}
-
+        <div className="flex items-center gap-2 pt-1 overflow-x-auto">
           <Link
             href={`/garden/${item.id}`}
-            className="font-display text-lg tracking-widest text-phosphor-dim hover:text-phosphor transition-colors focus:outline-none ml-auto"
+            className="font-display text-lg tracking-widest border border-phosphor/40 text-phosphor px-3 py-0.5 hover:border-phosphor hover:bg-vault-active hover:glow transition-colors focus:outline-none shrink-0"
           >
-            OPEN FILE →
+            ▸ OPEN FILE
           </Link>
 
           {item.url && (
@@ -91,11 +68,36 @@ function SeedPanel({ item }: Props) {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-display text-lg tracking-widest text-phosphor-dim hover:text-amber transition-colors focus:outline-none"
+              className="font-display text-lg tracking-widest border border-amber/40 text-amber px-3 py-0.5 hover:border-amber hover:bg-amber-faint hover:glow-amber transition-colors focus:outline-none shrink-0"
             >
-              SOURCE ↗
+              ↗ SOURCE
             </a>
           )}
+
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            <button
+              onClick={toggleStatus}
+              className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-3 py-0.5 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
+            >
+              {item.status === 'consumed' ? '◎ ACTIVE' : '◉ COMPLETE'}
+            </button>
+
+            {llm?.available && !item.enriched && (
+              hint.ok ? (
+                <button
+                  onClick={() => enrichItem.mutate(item)}
+                  disabled={enrichItem.isPending}
+                  className="font-display text-lg tracking-widest border border-amber/50 text-amber px-3 py-0.5 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-50"
+                >
+                  {enrichItem.isPending ? '◌ ENRICHING...' : '◈ ENRICH'}
+                </button>
+              ) : (
+                <span className="font-display text-sm text-danger tracking-widest">
+                  ✗ {hint.hint}
+                </span>
+              )
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

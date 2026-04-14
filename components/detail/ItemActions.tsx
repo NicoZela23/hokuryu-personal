@@ -53,7 +53,7 @@ function ItemActions({ item }: Props) {
           onClick={toggleStatus}
           className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-4 py-1 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
         >
-          {item.status === 'consumed' ? '▸ MARK ACTIVE' : '▸ MARK COMPLETE'}
+          {item.status === 'consumed' ? '▸ ACTIVE' : '▸ COMPLETE'}
         </button>
 
         {item.url && (
@@ -103,7 +103,7 @@ function ItemActions({ item }: Props) {
               disabled={enrichItem.isPending}
               className="font-display text-lg tracking-widest border border-amber/50 text-amber px-4 py-1 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-50"
             >
-              {enrichItem.isPending ? '◌ ENRICHING...' : '◈ ENRICH WITH AI'}
+              {enrichItem.isPending ? '◌ ENRICHING...' : '◈ ENRICH'}
             </button>
           ) : (
             <p className="font-display text-sm text-danger tracking-widest">
