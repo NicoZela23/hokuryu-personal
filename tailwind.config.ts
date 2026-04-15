@@ -51,19 +51,18 @@ const config: Config = {
           dim:     '#4d1818',
           faint:   '#2a0e0e',
         },
-        // ── Seed type accent colors ────────────────
+        // ── Source type accent colors (medium — seed card identity) ──
         seed: {
-          youtube:   '#cc4444',   // Gruvbox red
-          spotify:   '#95b86a',   // phosphor green
-          article:   '#669d9d',   // Gruvbox aqua
-          podcast:   '#9a7db0',   // Gruvbox purple
-          film:      '#d79921',   // Gruvbox yellow
-          book:      '#cc7733',   // Gruvbox orange
-          tiktok:    '#b06090',   // Gruvbox magenta
-          instagram: '#b06090',
-          concert:   '#b06090',
-          generic:   '#7a7a6a',
-          x:         '#9a9a8a',
+          video:       '#cc4444',   // red         — video content
+          film:        '#d79921',   // amber       — cinema / streaming
+          book:        '#cc7733',   // orange      — books, manga, reading
+          article:     '#669d9d',   // aqua        — articles, essays
+          podcast:     '#9a7db0',   // purple      — podcasts / audio shows
+          music:       '#95b86a',   // green       — music / albums
+          interactive: '#5080a0',   // steel blue  — games / interactive
+          event:       '#9060b0',   // violet      — concerts / live events
+          course:      '#7a9060',   // sage        — courses / education
+          generic:     '#7a7a6a',   // gray        — other
         },
         // ── Legacy compat aliases ──────────────────
         paper:  { DEFAULT: '#0d1409', dark: '#141c10' },
@@ -103,6 +102,7 @@ const config: Config = {
         'blink':          'blink 1s step-end infinite',
         'phosphor-pulse': 'phosphor-pulse 5s ease-in-out infinite',
         'boot':           'boot 0.5s ease-out forwards',
+        'rating-glow':    'rating-glow 1.8s ease-in-out infinite',
       },
       keyframes: {
         flicker: {
@@ -124,6 +124,10 @@ const config: Config = {
           '0%':   { opacity: '0', transform: 'scaleY(0.02)' },
           '40%':  { opacity: '1', transform: 'scaleY(0.02)' },
           '100%': { opacity: '1', transform: 'scaleY(1)' },
+        },
+        'rating-glow': {
+          '0%, 100%': { boxShadow: '0 0 2px rgba(149,184,106,0.3)', backgroundColor: 'rgba(149,184,106,0.8)' },
+          '50%':      { boxShadow: '0 0 8px rgba(149,184,106,1), 0 0 18px rgba(149,184,106,0.5)', backgroundColor: 'rgba(149,184,106,1)' },
         },
       },
     },

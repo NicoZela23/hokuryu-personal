@@ -75,12 +75,14 @@ function SeedPanel({ item }: Props) {
           )}
 
           <div className="ml-auto flex items-center gap-2 shrink-0">
-            <button
-              onClick={toggleStatus}
-              className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-3 py-0.5 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
-            >
-              {item.status === 'consumed' ? '◎ ACTIVE' : '◉ COMPLETE'}
-            </button>
+            {item.status !== 'consumed' && (
+              <button
+                onClick={toggleStatus}
+                className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-3 py-0.5 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
+              >
+                ◉ COMPLETE
+              </button>
+            )}
 
             {llm?.available && !item.enriched && (
               hint.ok ? (

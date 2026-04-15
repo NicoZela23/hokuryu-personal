@@ -10,17 +10,16 @@ import { truncate } from '@/lib/utils/format'
 import type { Item } from '@/lib/utils/types'
 
 const accentColor: Record<string, string> = {
-  youtube:   'border-l-seed-youtube',
-  spotify:   'border-l-seed-spotify',
-  tiktok:    'border-l-seed-tiktok',
-  instagram: 'border-l-seed-instagram',
-  x:         'border-l-seed-x',
-  article:   'border-l-seed-article',
-  podcast:   'border-l-seed-podcast',
-  film:      'border-l-seed-film',
-  book:      'border-l-seed-book',
-  concert:   'border-l-seed-concert',
-  generic:   'border-l-seed-generic',
+  video:       'border-l-seed-video',
+  film:        'border-l-seed-film',
+  book:        'border-l-seed-book',
+  article:     'border-l-seed-article',
+  podcast:     'border-l-seed-podcast',
+  music:       'border-l-seed-music',
+  interactive: 'border-l-seed-interactive',
+  event:       'border-l-seed-event',
+  course:      'border-l-seed-course',
+  generic:     'border-l-seed-generic',
 }
 
 type Props = { item: Item; index: number }
@@ -88,17 +87,14 @@ function SeedCard({ item, index }: Props) {
         {/* Notes preview */}
         {item.notes && (
           <p className="font-mono text-xs text-cream-dim mt-1.5">
-            &gt; {truncate(item.notes, 80)}
+            <span className="text-phosphor-dim select-none">▸ </span>{truncate(item.notes, 80)}
           </p>
         )}
 
         {/* Rating */}
         {item.rating !== null && (
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2">
             <RatingDots rating={item.rating} />
-            <span className="font-display text-sm text-phosphor-dim tracking-widest">
-              {item.rating}/5
-            </span>
           </div>
         )}
       </button>

@@ -1,17 +1,35 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Logo } from '@/components/ui/Logo'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { LogoutButton } from '@/components/auth/LogoutButton'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 type Props = { onMenuOpen: () => void }
 
 function Nav({ onMenuOpen }: Props) {
+  const [username, setUsername] = useState<string | null>(null)
+
+  useEffect(() => {
+    const supabase = createBrowserClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) {
+        setUsername(user.email.split('@')[0].toUpperCase())
+      }
+    })
+  }, [])
+
   return (
-    <nav className="sticky top-0 z-10 bg-vault-panel border-b border-vault-border" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.7)' }}>
+    <nav
+      className="sticky top-0 z-10 bg-vault-panel border-b border-vault-border"
+      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.7)' }}
+    >
       {/* System header */}
       <div className="px-4 md:px-6 py-1 border-b border-vault-border/50 hidden md:block">
         <p className="font-display text-sm text-phosphor-dim tracking-widest">
-          GRONE INDUSTRIES UNIFIED OPERATING SYSTEM — COPYRIGHT 2075 GRONE INDUSTRIES
+          HOKU INDUSTRIES UNIFIED OPERATING SYSTEM — COPYRIGHT 2075 HOKU INDUSTRIES
         </p>
       </div>
 
@@ -31,7 +49,7 @@ function Nav({ onMenuOpen }: Props) {
 
         <div className="flex-1 hidden md:flex items-center gap-2 ml-6">
           <span className="font-display text-lg text-phosphor-dim tracking-widest">
-            // DIGITAL GARDEN v1.0
+            // MEDIA ARCHIVE v1.0
           </span>
         </div>
 
@@ -39,7 +57,19 @@ function Nav({ onMenuOpen }: Props) {
           <span className="font-display text-base text-phosphor-dim tracking-widest hidden sm:block animate-blink">
             ▌
           </span>
+
+          {username && (
+            <Link
+              href="/settings/profile"
+              className="font-display text-base text-phosphor tracking-widest hidden sm:block hover:text-phosphor-bright transition-colors focus:outline-none"
+              title="Edit profile"
+            >
+              [{username}]
+            </Link>
+          )}
+
           <ThemeToggle />
+          <LogoutButton />
         </div>
       </div>
     </nav>

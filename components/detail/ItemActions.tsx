@@ -22,14 +22,14 @@ function ItemActions({ item }: Props) {
   const enrichItem     = useEnrichItem()
   const { data: llm }  = useLLMStatus()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [status, setStatus] = useState(item.status)
 
   const hint = enrichHint(item)
 
   function toggleStatus() {
-    updateItem.mutate({
-      id: item.id,
-      patch: { status: item.status === 'consumed' ? 'pending' : 'consumed' },
-    })
+    const next = status === 'consumed' ? 'pending' : 'consumed'
+    setStatus(next)
+    updateItem.mutate({ id: item.id, patch: { status: next } })
   }
 
   async function handleEnrich() {
@@ -49,12 +49,14 @@ function ItemActions({ item }: Props) {
       </p>
 
       <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={toggleStatus}
-          className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-4 py-1 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
-        >
-          {item.status === 'consumed' ? '▸ ACTIVE' : '▸ COMPLETE'}
-        </button>
+        {status !== 'consumed' && (
+          <button
+            onClick={toggleStatus}
+            className="font-display text-lg tracking-widest border border-vault-border text-phosphor-dim px-4 py-1 hover:border-phosphor hover:text-phosphor hover:bg-vault-hover transition-colors focus:outline-none"
+          >
+            ▸ COMPLETE
+          </button>
+        )}
 
         {item.url && (
           <a

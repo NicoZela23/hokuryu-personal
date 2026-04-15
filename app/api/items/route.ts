@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { eq, desc, and, like, or } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { items } from '@/lib/db/schema'
+import { createServerClient } from '@/lib/supabase/server'
 import { CreateItemSchema } from '@/lib/utils/types'
 import type { SQL } from 'drizzle-orm'
 
 export async function GET(req: NextRequest) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   try {
     const { searchParams } = new URL(req.url)
-    const conditions: SQL[] = []
+    const conditions: SQL[] = [eq(items.userId, user.id)]
 
     const status      = searchParams.get('status')
     const type        = searchParams.get('type')
@@ -22,10 +27,18 @@ export async function GET(req: NextRequest) {
     if (genre)       conditions.push(eq(items.genre, genre))
     if (recommender) conditions.push(eq(items.recommender, recommender))
     if (mood)        conditions.push(like(items.mood, `%${mood}%`))
-    if (q)           conditions.push(or(like(items.title, `%${q}%`), like(items.synopsis, `%${q}%`), like(items.author, `%${q}%`))!)
+    if (q)           conditions.push(
+      or(
+        like(items.title,    `%${q}%`),
+        like(items.synopsis, `%${q}%`),
+        like(items.author,   `%${q}%`),
+      )!
+    )
 
-    const rows = await db.select().from(items)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
+    const rows = await db
+      .select()
+      .from(items)
+      .where(and(...conditions))
       .orderBy(desc(items.createdAt))
 
     return NextResponse.json({ items: rows })
@@ -36,21 +49,31 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const body   = await req.json()
   const result = CreateItemSchema.safeParse(body)
   if (!result.success) return NextResponse.json({ error: result.error }, { status: 400 })
 
   try {
+    // Per-user duplicate URL check
     if (result.data.url) {
-      const [existing] = await db.select().from(items).where(eq(items.url, result.data.url)).limit(1)
+      const [existing] = await db
+        .select()
+        .from(items)
+        .where(and(eq(items.url, result.data.url), eq(items.userId, user.id)))
+        .limit(1)
       if (existing) return NextResponse.json({ item: existing })
     }
 
     const [item] = await db.insert(items).values({
       ...result.data,
-      url:      result.data.url      ?? null,
+      userId:   user.id,
+      url:      result.data.url    ?? null,
       enriched: false,
-      status:   result.data.status   ?? 'pending',
+      status:   result.data.status ?? 'pending',
     }).returning()
 
     return NextResponse.json({ item })

@@ -62,7 +62,7 @@ export type IngestUrlResult =
   | { duplicate: true; item: Item }
 
 export type EnrichResult =
-  | { enriched: EnrichedMetadata; provider: string }
+  | { enriched: EnrichedMetadata; provider: string | null; cached: boolean }
   | { unavailable: true }
   | { error: true; metadata: Partial<ScrapedMetadata> }
 

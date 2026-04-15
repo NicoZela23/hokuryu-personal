@@ -1,9 +1,11 @@
 import * as cheerio from 'cheerio'
-import { detectContentType } from '@/lib/utils/contentType'
+import { detectContentType, detectPlatform, detectContentFormat } from '@/lib/utils/contentType'
 import type { ScrapedMetadata } from '@/lib/utils/types'
 
 export async function scrapeUrl(url: string): Promise<ScrapedMetadata> {
-  const sourceType = detectContentType(url)
+  const sourceType    = detectContentType(url)
+  const platform      = detectPlatform(url)
+  const contentFormat = detectContentFormat(url)
 
   try {
     const got = (await import('got')).default
@@ -36,8 +38,8 @@ export async function scrapeUrl(url: string): Promise<ScrapedMetadata> {
       $('meta[name="author"]').attr('content') ??
       ''
 
-    return { url, sourceType, title: title.trim(), author: author.trim(), thumbnail, rawDescription }
+    return { url, sourceType, platform, contentFormat, title: title.trim(), author: author.trim(), thumbnail, rawDescription }
   } catch {
-    return { url, sourceType, title: '', author: '', thumbnail: '', rawDescription: '' }
+    return { url, sourceType, platform, contentFormat, title: '', author: '', thumbnail: '', rawDescription: '' }
   }
 }

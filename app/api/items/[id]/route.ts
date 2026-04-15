@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { items, itemTags, tags } from '@/lib/db/schema'
+import { createServerClient } from '@/lib/supabase/server'
 import { PatchItemSchema } from '@/lib/utils/types'
 
 type Ctx = { params: { id: string } }
 
-export async function GET(_req: NextRequest, { params }: Ctx) {
+export async function GET(req: NextRequest, { params }: Ctx) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const id = parseInt(params.id, 10)
   if (isNaN(id)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
 
   try {
-    const [item] = await db.select().from(items).where(eq(items.id, id)).limit(1)
+    const [item] = await db
+      .select()
+      .from(items)
+      .where(and(eq(items.id, id), eq(items.userId, user.id)))
+      .limit(1)
     if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
     const tagRows = await db
@@ -28,6 +37,10 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Ctx) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const id = parseInt(params.id, 10)
   if (isNaN(id)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
 
@@ -40,9 +53,13 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     if (result.data.status === 'consumed') patch.consumedAt = new Date().toISOString()
     if (result.data.status === 'pending')  patch.consumedAt = null
 
-    const [item] = await db.update(items).set(patch).where(eq(items.id, id)).returning()
-    if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    const [item] = await db
+      .update(items)
+      .set(patch)
+      .where(and(eq(items.id, id), eq(items.userId, user.id)))
+      .returning()
 
+    if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json({ item })
   } catch (err) {
     console.error('[items/[id]/PATCH]', err)
@@ -51,11 +68,18 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Ctx) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const id = parseInt(params.id, 10)
   if (isNaN(id)) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
 
   try {
-    await db.delete(items).where(eq(items.id, id))
+    await db
+      .delete(items)
+      .where(and(eq(items.id, id), eq(items.userId, user.id)))
+
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('[items/[id]/DELETE]', err)

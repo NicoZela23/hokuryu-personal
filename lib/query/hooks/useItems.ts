@@ -49,15 +49,18 @@ export function useUpdateItem() {
     },
     onMutate: async ({ id, patch }) => {
       await queryClient.cancelQueries({ queryKey: ['items'] })
-      const prev = queryClient.getQueryData(keys.items())
-      queryClient.setQueryData(keys.items(), (old: { items: Item[] } | undefined) => {
-        if (!old) return old
-        return { items: old.items.map((item) => (item.id === id ? { ...item, ...patch } : item)) }
-      })
-      return { prev }
+      const snapshots = queryClient.getQueriesData<{ items: Item[] }>({ queryKey: ['items'] })
+      queryClient.setQueriesData<{ items: Item[] }>(
+        { queryKey: ['items'], exact: false },
+        (old) => {
+          if (!old || !Array.isArray(old.items)) return old
+          return { ...old, items: old.items.map((item) => (item.id === id ? { ...item, ...patch } : item)) }
+        },
+      )
+      return { snapshots }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(keys.items(), ctx.prev)
+      ctx?.snapshots?.forEach(([key, data]) => queryClient.setQueryData(key, data))
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['items'] })

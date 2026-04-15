@@ -3,39 +3,70 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { sidebarVariants, overlayVariants } from '@/lib/animations'
-import { SOURCE_TYPES } from '@/lib/utils/types'
+import { SOURCE_TYPES, CONTENT_FORMATS } from '@/lib/utils/types'
 
 type Props = {
   open:    boolean
   onClose: () => void
 }
 
-const categoryLabels: Record<string, string> = {
-  youtube:   'VIDEO',
-  spotify:   'MUSIC',
-  tiktok:    'CLIPS',
-  instagram: 'IMAGE',
-  x:         'POSTS',
-  article:   'ARTICLES',
-  podcast:   'PODCASTS',
-  film:      'FILMS',
-  book:      'BOOKS',
-  concert:   'CONCERTS',
-  generic:   'OTHER',
+// Source type (medium) display labels + colors
+const typeLabels: Record<string, string> = {
+  video:       'VIDEO',
+  film:        'FILM',
+  book:        'BOOKS',
+  article:     'ARTICLES',
+  podcast:     'PODCASTS',
+  music:       'MUSIC',
+  interactive: 'INTERACTIVE',
+  event:       'EVENTS',
+  course:      'COURSES',
+  generic:     'OTHER',
 }
 
-const categoryColors: Record<string, string> = {
-  youtube:   'text-seed-youtube',
-  spotify:   'text-seed-spotify',
-  tiktok:    'text-seed-tiktok',
-  instagram: 'text-seed-instagram',
-  x:         'text-seed-x',
-  article:   'text-seed-article',
-  podcast:   'text-seed-podcast',
-  film:      'text-seed-film',
-  book:      'text-seed-book',
-  concert:   'text-seed-concert',
-  generic:   'text-seed-generic',
+const typeColors: Record<string, string> = {
+  video:       'text-seed-video',
+  film:        'text-seed-film',
+  book:        'text-seed-book',
+  article:     'text-seed-article',
+  podcast:     'text-seed-podcast',
+  music:       'text-seed-music',
+  interactive: 'text-seed-interactive',
+  event:       'text-seed-event',
+  course:      'text-seed-course',
+  generic:     'text-seed-generic',
+}
+
+// Content format display labels
+const formatLabels: Record<string, string> = {
+  anime:        'ANIME',
+  animation:    'ANIMATION',
+  series:       'SERIES',
+  documentary:  'DOCUMENTARY',
+  'k-drama':    'K-DRAMA',
+  'stand-up':   'STAND-UP',
+  manga:        'MANGA',
+  manhwa:       'MANHWA',
+  comics:       'COMICS',
+  fiction:      'FICTION',
+  'non-fiction':'NON-FICTION',
+  biography:    'BIOGRAPHY',
+  'self-help':  'SELF-HELP',
+  programming:  'PROGRAMMING',
+  design:       'DESIGN',
+  'ai-ml':      'AI / ML',
+  science:      'SCIENCE',
+  history:      'HISTORY',
+  philosophy:   'PHILOSOPHY',
+  news:         'NEWS',
+  'true-crime': 'TRUE CRIME',
+  nature:       'NATURE',
+  travel:       'TRAVEL',
+  food:         'FOOD',
+  sports:       'SPORTS',
+  album:        'ALBUM',
+  'live-concert':'LIVE CONCERT',
+  education:    'EDUCATION',
 }
 
 const STATUS_OPTIONS = [
@@ -50,27 +81,28 @@ function Sidebar({ open, onClose }: Props) {
   const shouldReduce = useReducedMotion()
 
   const currentType   = searchParams.get('type')   ?? undefined
+  const currentFormat = searchParams.get('format') ?? undefined
   const currentStatus = searchParams.get('status') ?? undefined
 
-  function navigate(type?: string, status?: string) {
+  function navigate(updates: { type?: string | null; format?: string | null; status?: string | null }) {
     const params = new URLSearchParams(searchParams.toString())
-    if (type)   params.set('type', type)
-    else        params.delete('type')
-    if (status) params.set('status', status)
-    else        params.delete('status')
+    if ('type'   in updates) { updates.type   ? params.set('type',   updates.type)   : params.delete('type') }
+    if ('format' in updates) { updates.format ? params.set('format', updates.format) : params.delete('format') }
+    if ('status' in updates) { updates.status ? params.set('status', updates.status) : params.delete('status') }
     router.push(`/garden?${params.toString()}`)
     onClose()
   }
 
   const navContent = (
     <div className="space-y-6">
+      {/* ── Medium (source type) ── */}
       <div>
         <p className="font-display text-xl text-phosphor-dim tracking-widest mb-2 border-b border-vault-border pb-1">
-          ■ TYPE INDEX
+          ■ MEDIUM
         </p>
         <div className="space-y-0.5">
           <button
-            onClick={() => navigate(undefined, currentStatus)}
+            onClick={() => navigate({ type: null })}
             className={`w-full text-left font-display text-xl tracking-widest px-2 py-1 transition-colors focus:outline-none ${
               !currentType
                 ? 'text-phosphor-bright glow bg-vault-active'
@@ -81,22 +113,58 @@ function Sidebar({ open, onClose }: Props) {
           </button>
           {SOURCE_TYPES.map((type) => {
             const isActive = currentType === type
-            const color    = isActive ? categoryColors[type] : 'text-phosphor-dim'
+            const color    = isActive ? typeColors[type] : 'text-phosphor-dim'
             return (
               <button
                 key={type}
-                onClick={() => navigate(type, currentStatus)}
+                onClick={() => navigate({ type })}
                 className={`w-full text-left font-display text-xl tracking-widest px-2 py-1 transition-colors focus:outline-none hover:bg-vault-hover ${
                   isActive ? `bg-vault-active ${color}` : `${color} hover:text-phosphor`
                 }`}
               >
-                {isActive ? '► ' : '  '}{categoryLabels[type]}
+                {isActive ? '► ' : '  '}{typeLabels[type]}
               </button>
             )
           })}
         </div>
       </div>
 
+      {/* ── Content format ── */}
+      <div>
+        <p className="font-display text-xl text-phosphor-dim tracking-widest mb-2 border-b border-vault-border pb-1">
+          ■ FORMAT
+        </p>
+        <div className="space-y-0.5">
+          <button
+            onClick={() => navigate({ format: null })}
+            className={`w-full text-left font-display text-xl tracking-widest px-2 py-1 transition-colors focus:outline-none ${
+              !currentFormat
+                ? 'text-phosphor-bright glow bg-vault-active'
+                : 'text-phosphor-dim hover:text-phosphor hover:bg-vault-hover'
+            }`}
+          >
+            {!currentFormat ? '► ' : '  '}ALL FORMATS
+          </button>
+          {CONTENT_FORMATS.map((fmt) => {
+            const isActive = currentFormat === fmt
+            return (
+              <button
+                key={fmt}
+                onClick={() => navigate({ format: fmt })}
+                className={`w-full text-left font-display text-lg tracking-widest px-2 py-0.5 transition-colors focus:outline-none hover:bg-vault-hover ${
+                  isActive
+                    ? 'bg-vault-active text-amber'
+                    : 'text-phosphor-dim hover:text-phosphor'
+                }`}
+              >
+                {isActive ? '► ' : '  '}{formatLabels[fmt] ?? fmt.toUpperCase()}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Status ── */}
       <div>
         <p className="font-display text-xl text-phosphor-dim tracking-widest mb-2 border-b border-vault-border pb-1">
           ■ STATUS
@@ -107,7 +175,7 @@ function Sidebar({ open, onClose }: Props) {
             return (
               <button
                 key={s.label}
-                onClick={() => navigate(currentType, s.value)}
+                onClick={() => navigate({ status: s.value ?? null })}
                 className={`w-full text-left font-display text-xl tracking-widest px-2 py-1 transition-colors focus:outline-none hover:bg-vault-hover ${
                   isActive
                     ? 'text-phosphor-bright glow bg-vault-active'

@@ -3,7 +3,7 @@ import type { LLMProvider, EnrichInput, EnrichOutput } from '../interface'
 import { SYSTEM_PROMPT, buildUserMessage } from '../interface'
 
 export class OpenRouterProvider implements LLMProvider {
-  name = 'openrouter'
+  name = 'artyom'
 
   isAvailable(): boolean {
     return !!process.env.OPENROUTER_API_KEY

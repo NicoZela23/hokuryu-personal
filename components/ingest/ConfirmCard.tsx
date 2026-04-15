@@ -24,7 +24,6 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
   const { data: llm } = useLLMStatus()
 
   const [title, setTitle]             = useState(metadata.title)
-  const [author, setAuthor]           = useState(metadata.author ?? '')
   const [sourceType, setSourceType]   = useState(metadata.sourceType)
   const [recommender, setRecommender] = useState('')
   const [synopsis, setSynopsis]       = useState('')
@@ -32,32 +31,53 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
   const [mood, setMood]               = useState('')
   const [aiTags, setAiTags]           = useState('')
   const [keywords, setKeywords]       = useState<string[]>([])
-  const [llmProvider, setLlmProvider] = useState<string | null>(null)
-  const [enriched, setEnriched]       = useState(false)
+  const [llmProvider,  setLlmProvider]  = useState<string | null>(null)
+  const [enriched,     setEnriched]     = useState(false)
+  const [fakeLoading,  setFakeLoading]  = useState(false)
+  const [fakeMessage,  setFakeMessage]  = useState('')
 
   const variants    = shouldReduce ? { hidden: {}, visible: {}, exit: {} } : confirmCardVariants
-  const isEnriching = enrich.isPending
+  const isEnriching = enrich.isPending || fakeLoading
+  const loadingLabel = fakeLoading ? fakeMessage : '◌ ENRICHING...'
+
+  function applyResult(result: { enriched: import('@/lib/utils/types').EnrichedMetadata; provider: string | null }) {
+    setTitle(result.enriched.title || title)
+    setSynopsis(result.enriched.synopsis || '')
+    setGenre(result.enriched.genre || '')
+    setMood(Array.isArray(result.enriched.mood) ? result.enriched.mood.join(', ') : '')
+    setAiTags(Array.isArray(result.enriched.aiTags) ? JSON.stringify(result.enriched.aiTags) : '')
+    setKeywords(Array.isArray(result.enriched.keywords) ? result.enriched.keywords : [])
+    if (result.enriched.sourceType) setSourceType(result.enriched.sourceType as typeof sourceType)
+    setLlmProvider(result.provider)
+    setEnriched(true)
+  }
 
   async function handleEnrich() {
     const result = await enrich.mutateAsync(metadata)
-    if ('enriched' in result) {
-      setTitle(result.enriched.title || title)
-      setSynopsis(result.enriched.synopsis || '')
-      setGenre(result.enriched.genre || '')
-      setMood(Array.isArray(result.enriched.mood) ? result.enriched.mood.join(', ') : '')
-      setAiTags(Array.isArray(result.enriched.aiTags) ? JSON.stringify(result.enriched.aiTags) : '')
-      setKeywords(Array.isArray(result.enriched.keywords) ? result.enriched.keywords : [])
-      if (result.enriched.sourceType) setSourceType(result.enriched.sourceType as typeof sourceType)
-      setLlmProvider(result.provider)
-      setEnriched(true)
+    if (!('enriched' in result)) return
+
+    if (result.cached) {
+      // Data came from cache — simulate AI processing so it doesn't feel instant
+      const steps = [
+        '◌ SCANNING VAULT RECORDS...',
+        '◌ CROSS-REFERENCING DATA...',
+        '◌ COMPILING ENTRY...',
+      ]
+      setFakeLoading(true)
+      for (const msg of steps) {
+        setFakeMessage(msg)
+        await new Promise<void>(r => setTimeout(r, 300 + Math.random() * 200))
+      }
+      setFakeLoading(false)
     }
+
+    applyResult(result)
   }
 
   async function handleConfirm() {
     const result = await confirm.mutateAsync({
       url:         metadata.url || null,
       title,
-      author:      author || null,
       sourceType,
       recommender: recommender || null,
       synopsis:    synopsis || null,
@@ -102,12 +122,6 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
           placeholder="title"
         />
         <div className="grid grid-cols-2 gap-2">
-          <input
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            placeholder="AUTHOR"
-            className={inputClass}
-          />
           <select
             value={sourceType}
             onChange={(e) => setSourceType(e.target.value as typeof sourceType)}
@@ -117,20 +131,20 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
               <option key={t} value={t}>{t.toUpperCase()}</option>
             ))}
           </select>
+          <input
+            value={recommender}
+            onChange={(e) => setRecommender(e.target.value)}
+            placeholder="RECOMMENDED BY"
+            className={inputClass}
+          />
         </div>
-        <input
-          value={recommender}
-          onChange={(e) => setRecommender(e.target.value)}
-          placeholder="RECOMMENDED BY"
-          className={inputClass}
-        />
       </div>
 
       {/* Enriched preview */}
       {isEnriching ? (
         <div className="space-y-2 border-t border-vault-border/50 pt-3">
           <p className="font-display text-base text-phosphor-dim tracking-widest animate-blink">
-            ◌ ENRICHMENT IN PROGRESS...
+            {loadingLabel}
           </p>
           <Skeleton className="w-full h-14" />
           <div className="flex gap-2">
@@ -183,7 +197,7 @@ function ConfirmCard({ metadata, onConfirm, onDiscard }: Props) {
             disabled={isEnriching}
             className="font-display text-xl tracking-widest border border-amber/50 text-amber px-4 py-1 hover:border-amber hover:bg-amber-faint transition-colors focus:outline-none disabled:opacity-60"
           >
-            {isEnriching ? '◌ ENRICHING...' : '◈ ENRICH'}
+            {isEnriching ? loadingLabel : '◈ ENRICH'}
           </button>
         )}
 

@@ -112,22 +112,25 @@ function ManualEntryForm({ onSaved }: Props) {
         </div>
 
         <div>
-          <label className={labelClass}>NOTES</label>
+          <div className="flex items-baseline justify-between mt-1 mb-1">
+            <label className={labelClass}>NOTES</label>
+            <span className={`font-display text-sm tracking-widest ${notes.length > 230 ? 'text-danger' : 'text-phosphor-dim'}`}>
+              {notes.length}/250
+            </span>
+          </div>
           <textarea
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="field notes (optional)"
+            onChange={(e) => setNotes(e.target.value.slice(0, 250))}
+            placeholder="▸ field notes (optional)"
             rows={2}
-            className={`${inputClass} mt-1 resize-none`}
+            maxLength={250}
+            className={`${inputClass} resize-none`}
           />
         </div>
 
         <div className="flex items-center gap-3 pt-1">
           <span className={labelClass}>RATING</span>
           <RatingDots rating={rating} interactive onChange={setRating} />
-          <span className="font-display text-base text-phosphor-dim tracking-widest">
-            {rating ? `${rating}/5` : '—'}
-          </span>
         </div>
 
         {llm?.available && url && (
