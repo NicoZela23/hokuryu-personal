@@ -24,6 +24,7 @@ export const items = sqliteTable('items', {
   llmProvider: text('llm_provider'),
   createdAt:   text('created_at').default(sql`CURRENT_TIMESTAMP`),
   consumedAt:  text('consumed_at'),
+  testing:      text('tested_ar')
 })
 
 export const tags = sqliteTable('tags', {
